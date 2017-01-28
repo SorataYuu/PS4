@@ -1,0 +1,36 @@
+########################
+# CS3217 Problem Set 4 #
+########################
+
+# Name: 
+# Matric No:
+# Tutor:
+
+#####################
+# Problem 1: Design #
+#####################
+
+###############
+# Problem 1.1 #
+###############
+
+Please save your diagram as `class-diagram.png` in the root directory of the repository.
+
+###############
+# Problem 1.2 #
+###############
+
+Your Answer here.
+
+###############
+# Problem 2.1 #
+###############
+
+Your Answer here
+
+
+######################
+# Problem 3: Testing #
+######################
+
+Your Answer here
