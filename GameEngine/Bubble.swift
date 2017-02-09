@@ -17,31 +17,31 @@ import Foundation
  */
 @objc class Bubble: NSObject, NSCoding {
     var bubbleType: BubbleType
-    
-    override init(){
+
+    override init() {
         bubbleType = .empty
     }
-    
-    init(bubbleType: BubbleType){
+
+    init(bubbleType: BubbleType) {
         self.bubbleType = bubbleType
     }
-    
+
     //Dynamic Variable that returns the image name based on the BubbleType
     //Enum that contains the image name String as its raw value
     var imageName: String {
         switch bubbleType {
         case .blue:
             return "bubble-blue.png"
-            
+
         case .red:
             return "bubble-red.png"
-            
+
         case .green:
             return "bubble-green.png"
-            
+
         case .orange:
             return "bubble-orange.png"
-            
+
         case .empty:
             return "bubble-empty.png"
         }

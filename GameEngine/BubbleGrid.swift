@@ -16,12 +16,12 @@ import Foundation
     and the Values being a List of Bubbles
  */
 class BubbleGrid: NSObject, NSCoding {
-    private var bubbleGrid: Dictionary<Int,[Bubble]>
+    private var bubbleGrid: Dictionary<Int, [Bubble]>
     
     //Default Initialization creates a BubbleGrid of Empty bubbles 
     //with the default rows and columns
     override init() {
-        bubbleGrid = Dictionary<Int,[Bubble]>()
+        bubbleGrid = Dictionary<Int, [Bubble]>()
         
         for row in 0...defaultNoOfRows {
             bubbleGrid[row] = [Bubble]()
@@ -95,8 +95,12 @@ class BubbleGrid: NSObject, NSCoding {
     /// Parameter:
     ///  - indexPath: Location of the Bubble
     ///  - bubbleType: The new BubbleType
-    func setBubbleType(at indexPath: IndexPath, bubbleType: BubbleType) {
-        if bubbleGrid[indexPath.section] != nil {
+    func setBubbleType(at indexPath: IndexPath, toType bubbleType: BubbleType) {
+        if let bubbleRow = bubbleGrid[indexPath.section] {
+            guard indexPath.item >= 0 && indexPath.item < bubbleRow.count else {
+                return
+            }
+            
             bubbleGrid[indexPath.section]![indexPath.item].bubbleType = bubbleType
         }
     }
@@ -111,7 +115,7 @@ class BubbleGrid: NSObject, NSCoding {
         if let bubbleGrid = aDecoder.decodeObject(forKey: "bubbleGrid") as? Dictionary<Int,[Bubble]> {
             self.bubbleGrid = bubbleGrid
         } else {
-            self.bubbleGrid = Dictionary<Int,[Bubble]>()
+            self.bubbleGrid = Dictionary<Int, [Bubble]>()
         }
     }
 }

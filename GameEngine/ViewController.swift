@@ -7,33 +7,62 @@
 //
 
 import UIKit
-import QuartzCore
 
+/**
+ ViewController that controls what is being displayed
+ 
+ Variables:
+ - gameArea: The IBOutlet for the UIView of the whole screen
+ - bubbleCollectionView: The IBOutlet of the UICollectionView for the Grid of Bubbles
+ - bubbleSize: Size of the Bubbles on Screen
+ - con: Reference to the Controller class
+ - projectile: Reference to the Projectile displayed on screen
+ */
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
 
     @IBOutlet weak var gameArea: UIView!
     @IBOutlet weak var bubbleCollectionView: UICollectionView!
     
     var bubbleSize: CGFloat!
-    var projectile: UIImageView?
     var con: Controller!
+    var projectile = UIImageView()
     
+    //Initial Method to run
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setUpGameArea()
+        
         con = Controller(self)
-        con.newProjectile()
+    }
+    
+    //Set up the Game Area
+    private func setUpGameArea() {
+        bubbleCollectionView.delegate = self
+        bubbleCollectionView.dataSource = self
         
         bubbleSize = gameArea.frame.width / CGFloat(evenRowBubbleCount)
-        createProjectile()
-        setUpGameArea()
+        
+        gameArea.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(self.gameAreaTapped)))
     }
     
+    //Make Game Full Screen
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    //Obtain the Initialization Variables for the Physics Engine
     override func viewWillAppear(_ animated: Bool) {
-        let bubblePositions = self.calculateAllBubblePositions()
-        con.setPhysicsVariables(bubbleSize: bubbleSize, bubblePositions: bubblePositions, screenWidth: gameArea.frame.width, screenHeight: gameArea.frame.height)
+        let bubblePositions = self.getBubblePositions()
+        con.setupPhysics(bubbleSize: bubbleSize, bubblePositions: bubblePositions,
+                                screenWidth: gameArea.frame.width, screenHeight: gameArea.frame.height)
     }
     
-    func calculateAllBubblePositions() -> Dictionary<Int, [CGPoint]> {
+    //Obtain the Positions of the Bubbles Slots on the Screen
+    /// Returns:
+    ///  - Dictionary<Int, [CGPoint]> of a Matrix of Positions for the Bubble Slots
+    private func getBubblePositions() -> Dictionary<Int, [CGPoint]> {
         var bubblePositions = Dictionary<Int, [CGPoint]>()
         
         for sectionNo in 0..<bubbleCollectionView.numberOfSections {
@@ -53,87 +82,158 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return bubblePositions
     }
     
-    func setUpGameArea(){
-        bubbleCollectionView.delegate = self
-        bubbleCollectionView.dataSource = self
-        
-        gameArea.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(gameAreaTapped)))
-    }
-    
-    func createProjectile(){
-        let bubble = con.projectile
-        
+    //Create a new Projectile on screen
+    /// Parameters:
+    ///  - bubble: Bubble to use as Projectile
+    func createProjectile(projectile bubble: Bubble) {
         let bubbleImage = UIImage(named: bubble.imageName)
         projectile = UIImageView(image: bubbleImage)
         
         let posX = (gameArea.frame.width/2) - bubbleSize/2
         let posY = gameArea.frame.height - bubbleSize
         
-        projectile!.frame.origin = CGPoint(x: posX, y: posY)
-        projectile!.frame.size = CGSize(width: bubbleSize, height: bubbleSize)
+        projectile.frame.origin = CGPoint(x: posX, y: posY)
+        projectile.frame.size = CGSize(width: bubbleSize, height: bubbleSize)
         
-        gameArea.addSubview(projectile!)
+        gameArea.addSubview(projectile)
+        
+        animateExpansion(node: projectile)
     }
     
-    func dropUnconnected(indexPaths: [IndexPath]) {
+    //Receive the User's Tap on screen
+    func gameAreaTapped(sender: UITapGestureRecognizer) {
+        enableInteraction(isEnabled: false)
+        
+        let tappedPoint = sender.location(in: gameArea)
+        let path = con.calculateProjectilePath(origin: projectile.center, tapped: tappedPoint)
+        
+        CATransaction.begin()
+        CATransaction.setCompletionBlock({
+            self.con.shootFinished(destination: path.2)
+        })
+        
+        animateShoot(node: projectile, path: path.0, distance: path.1)
+        
+        CATransaction.commit()
+    }
+    
+    //Animate the Shrinking of Bubbles
+    /// Parameter:
+    ///  - indexPaths: The Bubbles to shrink
+    func shrinkBubbles(at indexPaths: [IndexPath]) {
+        CATransaction.begin()
+        
+        for indexPath in indexPaths {
+            if let bubble = bubbleCollectionView.cellForItem(at: indexPath) {
+                CATransaction.setCompletionBlock({
+                    self.con.shrinkFinished(at: indexPath)
+                    bubble.layer.removeAllAnimations()
+                })
+                
+                animateShrink(node: bubble)
+            }
+        }
+        CATransaction.commit()
+    }
+    
+    //Drop the Unconnected Bubbles
+    /// Parameter:
+    ///  - indexPaths: The Bubbles to drop
+    func dropUnconnected(at indexPaths: [IndexPath]) {
         CATransaction.begin()
         
         for indexPath in indexPaths {
             if let bubble = bubbleCollectionView.cellForItem(at: indexPath) {
                 let originalPosition = bubble.center
                 
-                let animation = CABasicAnimation(keyPath: "position.y")
                 CATransaction.setCompletionBlock({
-                    self.con.dropCompletes(indexPath: indexPath)
+                    self.con.dropFinished(at: indexPath)
                     bubble.center = originalPosition
                     bubble.layer.removeAllAnimations()
                 })
-                                
-                let destinationY = view.frame.height + bubbleSize
-                let durationRatio = destinationY - bubble.center.y
                 
-                animation.toValue = destinationY
-                animation.duration = 0.002 * Double(durationRatio)
-                animation.fillMode = kCAFillModeForwards
-                animation.isRemovedOnCompletion = false
-                
-                bubble.layer.add(animation, forKey: "move")
+                animateDrop(node: bubble)
             }
         }
         CATransaction.commit()
     }
     
-    func gameAreaTapped(sender: UITapGestureRecognizer){
-        enableInteraction(isEnabled: false)
-        if let proj = projectile {
-            let tappedPoint = sender.location(in: gameArea)
-            let path = con.calculateBubblePath(origin: proj.center, tapped: tappedPoint)
-
-            CATransaction.begin()
-            CATransaction.setCompletionBlock({
-                self.con.animationFinished(indexPath: path.2)
-            })
-            
-            let keyframeAnimation = CAKeyframeAnimation(keyPath: "position")
-            keyframeAnimation.path = path.0
-            keyframeAnimation.fillMode = kCAFillModeForwards
-            keyframeAnimation.isRemovedOnCompletion = false
-            keyframeAnimation.duration = Double(path.1/speedPerPixel)
-            keyframeAnimation.calculationMode = kCAAnimationCubicPaced
-            
-            proj.layer.add(keyframeAnimation, forKey: "move")
-            
-            proj.layer.position = path.0.currentPoint
-            CATransaction.commit()
-        }
+    //Animate Shooting
+    /// Parameters:
+    ///  - node: The Object to Shoot
+    ///  - path: The Path to shoot it along
+    ///  - distance: The Distance that the path moves
+    private func animateShoot(node: UIView, path: CGPath, distance: CGFloat) {
+        let keyframeAnimation = CAKeyframeAnimation(keyPath: "position")
+        keyframeAnimation.path = path
+        keyframeAnimation.fillMode = kCAFillModeForwards
+        keyframeAnimation.isRemovedOnCompletion = false
+        keyframeAnimation.duration = Double(distance/speedPerPixel)
+        keyframeAnimation.calculationMode = kCAAnimationCubicPaced
+        
+        node.layer.add(keyframeAnimation, forKey: "move")
+        
+        node.layer.position = path.currentPoint
     }
     
+    //Animate Expansion
+    /// Parameters:
+    ///  - node: The Object to Expand
+    private func animateExpansion(node: UIView) {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        
+        animation.fromValue = CGFloat(0.001)
+        animation.toValue = CGFloat(1)
+        animation.duration = Double(0.5)
+        animation.fillMode = kCAFillModeForwards
+        animation.isRemovedOnCompletion = false
+        
+        node.layer.add(animation, forKey: "expand")
+    }
+    
+    //Animate Shrinking
+    /// Parameters:
+    ///  - node: The Object to Shrink
+    private func animateShrink(node: UIView) {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        
+        animation.toValue = CGFloat(0.001)
+        animation.duration = Double(0.5)
+        animation.fillMode = kCAFillModeForwards
+        animation.isRemovedOnCompletion = false
+        
+        node.layer.add(animation, forKey: "shrink")
+    }
+    
+    //Animate Drop
+    /// Parameters:
+    ///  - node: The Object to Drop
+    private func animateDrop(node: UIView) {
+        let animation = CABasicAnimation(keyPath: "position.y")
+        
+        let destinationY = view.frame.height + bubbleSize
+        let durationRatio = destinationY - node.center.y
+        
+        animation.toValue = destinationY
+        animation.duration = 0.002 * Double(durationRatio)
+        animation.fillMode = kCAFillModeForwards
+        animation.isRemovedOnCompletion = false
+        
+        node.layer.add(animation, forKey: "move")
+
+    }
+    
+    //Control the ability to Interact
+    /// Parameters:
+    ///  - isEnabled: Should be Enabled or not
     func enableInteraction(isEnabled: Bool) {
         gameArea.isUserInteractionEnabled = isEnabled
     }
     
-    func updateBubbleColor(indexPath: IndexPath) {
+    //Update the Bubble's Color
+    /// Parameters:
+    ///  - indexPath: Bubble to be updated
+    func updateBubbleColor(at indexPath: IndexPath) {
         if con.bubbleGrid.bubbleType(at: indexPath) == .empty {
             let bubbleCell = bubbleCollectionView.cellForItem(at: indexPath) as! BubbleCell
             bubbleCell.bubbleImageView.image = nil
@@ -229,6 +329,3 @@ extension ViewController : UICollectionViewDelegateFlowLayout {
         return 0
     }
 }
-
-
-

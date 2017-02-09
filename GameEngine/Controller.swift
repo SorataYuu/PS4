@@ -6,68 +6,140 @@
 //  Copyright © 2017 nus.cs3217.a0139963n. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
+/**
+ Controller used to interface with the View and the Model, 
+ as well as perform logic functions
+ 
+ Variables:
+ - bubbleGrid: The Active BubbleGrid
+ - projectile: Model of the Projectile
+ - vc: Reference to the ViewController
+ - physics: Reference to the Physics Engine
+ */
 class Controller {
     private (set) var bubbleGrid = BubbleGrid()
-    private (set) var projectile: Bubble
+    private (set) var projectile = Bubble(bubbleType: .empty)
     
     private var vc: ViewController
-    private var physics: Physics
+    private var physics: Physics!
     
+    //Default Initializer
+    /// Parameters:
+    ///  - viewController: Reference to the ViewController
     init(_ viewController: ViewController) {
         vc = viewController
-        physics = Physics(bubbleGrid: bubbleGrid)
-        projectile = Bubble(bubbleType: .empty)
-    }
-    
-    func newProjectile(){
-        projectile = generateRandomBubble()
-    }
-    
-    func animationFinished(indexPath: IndexPath){
-        setBubbleType(indexPath: indexPath, bubbleType: projectile.bubbleType)
-        vc.projectile!.removeFromSuperview()
-        let isRemovingBubbles = removeConnectedBubbles(indexPath: indexPath)
         
-        newProjectile()
-        vc.createProjectile()
+        createNewProjectile()
+    }
+    
+    //Set Up the Physics Engine
+    /// Parameters:
+    ///  - bubbleSize: Size of a Bubble
+    ///  - bubblePositions: Dictionary containing CGPoints of the corresponding bubbles
+    ///  - screenWidth: Width of the Screen
+    ///  - screenHeight: Height of the Screen
+    func setupPhysics(bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
+        physics = Physics(bubbleGrid: bubbleGrid, bubbleSize: bubbleSize, bubblePositions: bubblePositions, screenWidth: screenWidth, screenHeight: screenHeight)
+    }
+    
+    //Create a New Projectile
+    private func createNewProjectile() {
+        projectile = generateRandomBubble()
+        vc.createProjectile(projectile: projectile)
+    }
+    
+    //Set the Bubble Type and Update the Colour on the View
+    /// Parameters:
+    ///  - path: Bubble to be Changed
+    ///  - bubbleType: Type to be Changed to
+    private func setBubbleTypeAndUpdateColor(at path: IndexPath, toType bubbleType: BubbleType) {
+        bubbleGrid.setBubbleType(at: path, toType: bubbleType)
+        vc.updateBubbleColor(at: path)
+    }
+    
+    //Calls the Physics Engine to calculate the Path of the Projectile
+    /// Parameters:
+    ///  - origin: The Original Position of the Projectile
+    ///  - tapped: The Point where the User Tapped
+    /// Returns:
+    ///  - CGPath of the Path the Projectile should take
+    ///  - CGFloat of the total distance travelled by the Path
+    ///  - IndexPath of the final Index where the Projectile ends
+    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
+        return physics.calculateProjectilePath(origin: origin, tapped: tapped)
+    }
+    
+    //Called when the Shooting Animation of the Projectile Finishes
+    /// Parameters:
+    ///  - path: The Bubble Slot that the Projectile ends in
+    func shootFinished(destination path: IndexPath) {
+        setBubbleTypeAndUpdateColor(at: path, toType: projectile.bubbleType)
+        
+        vc.projectile.removeFromSuperview()
+        
+        let isRemovingBubbles = removeConnectedBubblesOfSameType(at: path)
         
         if !isRemovingBubbles {
             vc.enableInteraction(isEnabled: true)
         }
         
+        createNewProjectile()
     }
     
-    func setPhysicsVariables(bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
-        physics.setVisualVariables(bubbleSize: bubbleSize, bubblePositions: bubblePositions, screenWidth: screenWidth, screenHeight: screenHeight)
+    //Called when the Shrink Animation of the Destroyed Bubble Finishes
+    /// Parameters:
+    ///  - path: The Bubble that shrunk
+    func shrinkFinished(at path: IndexPath) {
+        vc.updateBubbleColor(at: path)
     }
     
-    func setBubbleType(indexPath: IndexPath, bubbleType: BubbleType){
-        bubbleGrid.setBubbleType(at: indexPath, bubbleType: bubbleType)
-        vc.updateBubbleColor(indexPath: indexPath)
+    //Called when the Drop Animation of the Unconnected Bubble Finishes
+    /// Parameters:
+    ///  - path: The Bubble that shrunk
+    func dropFinished(at path: IndexPath) {
+        setBubbleTypeAndUpdateColor(at: path, toType: .empty)
+        vc.enableInteraction(isEnabled: true)
     }
     
-    func calculateBubblePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
-        return physics.calculateBubblePath(origin: origin, tapped: tapped)
-    }
-    
-    func generateRandomBubble() -> Bubble {
-        let randomNumber = Int(arc4random_uniform(UInt32(noOfBubbleTypes)))
-        let bubbleType = BubbleType(rawValue: randomNumber)
+    //Remove Connected Bubbles that are the same type
+    /// Parameters:
+    ///  - path: The Bubble to be checked
+    /// Returns:
+    ///  - Bool of whether Unconnected Bubbles were being dropped
+    private func removeConnectedBubblesOfSameType(at path: IndexPath) -> Bool {
+        let connectedBubbles = getConnectedBubblesOfSameType(at: path)
         
-        return Bubble(bubbleType: bubbleType!)
+        //Only Remove when there are 3 or more
+        if connectedBubbles.count >= 3 {
+            for bubblePath in connectedBubbles {
+                bubbleGrid.setBubbleType(at: bubblePath, toType: .empty)
+            }
+            
+            //Call the Shrinking Bubble Animation
+            vc.shrinkBubbles(at: connectedBubbles)
+            
+            let bubblesToDrop = getUnconnectedBubbles()
+            vc.dropUnconnected(at: bubblesToDrop)
+            
+            return !bubblesToDrop.isEmpty
+        }
+        
+        return false
     }
     
-    func removeConnectedBubbles(indexPath: IndexPath) -> Bool{
+    //Get a List of Connected Bubbles that are of the Same Type
+    /// Parameters:
+    ///  - path: The Bubble to be checked against
+    private func getConnectedBubblesOfSameType(at path: IndexPath) -> [IndexPath] {
         var connectedBubbles = [IndexPath]()
         var visitedQueue = Queue<IndexPath>()
-        visitedQueue.enqueue(indexPath)
+        visitedQueue.enqueue(path)
         
         while !visitedQueue.isEmpty {
             let bubblePath = try! visitedQueue.dequeue()
-            let connected = connectedBubblesOfSameType(indexPath: bubblePath)
+            let connected = surroundingBubblesOfSameType(at: bubblePath)
             
             for path in connected {
                 if !connectedBubbles.contains(path) {
@@ -77,152 +149,184 @@ class Controller {
             }
         }
         
-        if connectedBubbles.count >= 3 {
-            for path in connectedBubbles {
-                setBubbleType(indexPath: path, bubbleType: .empty)
-            }
-            
-            let bubblesToDrop = checkForUnconnectedBubbles()
-            vc.dropUnconnected(indexPaths: bubblesToDrop)
-            
-            return bubblesToDrop.count > 0
-        }
-        
-        return false
+        return connectedBubbles
     }
     
-    func dropCompletes(indexPath: IndexPath) {
-        setBubbleType(indexPath: indexPath, bubbleType: .empty)
-        vc.enableInteraction(isEnabled: true)
-    }
-    
-    func connectedBubblesOfSameType(indexPath: IndexPath) -> [IndexPath]{
+    //Get a List of Surrounding Bubbles that are of the same type
+    /// Parameters:
+    ///  - path: The Bubble to be checked against
+    /// Returns:
+    ///  - [IndexPath] of surrounding Bubbles that have the same type
+    private func surroundingBubblesOfSameType(at path: IndexPath) -> [IndexPath] {
         var surroundingBubbles = [IndexPath]()
-        let surroundingIndexes = SurroundingIndexes(at: indexPath)
-        if let type = bubbleGrid.bubbleType(at: indexPath) {
+        let surroundingIndexes = SurroundingIndexes(at: path)
+        
+        if let type = bubbleGrid.bubbleType(at: path) {
             //Check Row Above
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.topLeftIndex,
+                          at: surroundingIndexes.topLeftIndex,
                           surroundingBubbles: &surroundingBubbles)
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.topRightIndex,
+                          at: surroundingIndexes.topRightIndex,
                           surroundingBubbles: &surroundingBubbles)
             
             //Check Current Row
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.leftIndex,
+                          at: surroundingIndexes.leftIndex,
                           surroundingBubbles: &surroundingBubbles)
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.rightIndex,
+                          at: surroundingIndexes.rightIndex,
                           surroundingBubbles: &surroundingBubbles)
             
             //Check Bottom Row
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.bottomLeftIndex,
+                          at: surroundingIndexes.bottomLeftIndex,
                           surroundingBubbles: &surroundingBubbles)
             addIfSameType(ofType: type,
-                          indexPath: surroundingIndexes.bottomRightIndex,
+                          at: surroundingIndexes.bottomRightIndex,
                           surroundingBubbles: &surroundingBubbles)
         }
         
         return surroundingBubbles
     }
     
-    func addIfSameType(ofType: BubbleType, indexPath: IndexPath, surroundingBubbles: inout [IndexPath]) {
-        if let type = bubbleGrid.bubbleType(at: indexPath) {
+    //Add the bubble into the surrounding Bubbles List if it is the same type
+    /// Parameters:
+    ///  - ofType: The Bubble Type that it needs to be
+    ///  - path: The Bubble to be checked
+    ///  - surroundingBubbles (inout): The list of surrounding Bubbles of the same type
+    private func addIfSameType(ofType: BubbleType, at path: IndexPath, surroundingBubbles: inout [IndexPath]) {
+        if let type = bubbleGrid.bubbleType(at: path) {
             if type == ofType {
-                surroundingBubbles.append(indexPath)
+                surroundingBubbles.append(path)
             }
         }
     }
     
-    func checkForUnconnectedBubbles() -> [IndexPath] {
-        var connectedBubbles = Dictionary<Int,[Bool]>()
-        var indexPath = IndexPath()
+    //Get a List of Unconnected Bubbles to the Top of the Screen
+    /// Returns:
+    ///  - [IndexPath] of Unconnected Bubbles
+    private func getUnconnectedBubbles() -> [IndexPath] {
+        let connectedBubbles = getConnectedBubbles()
+        
+        var unconnectedBubbles = [IndexPath]()
+        
+        for rowNo in 0..<bubbleGrid.rows {
+            for bubbleNo in 0..<bubbleGrid.noOfItems(at: rowNo) {
+                let path = IndexPath(item: bubbleNo, section: rowNo)
+                
+                guard let connectedRow = connectedBubbles[path.section],
+                    let type = bubbleGrid.bubbleType(at: path) else {
+                        continue
+                }
+                
+                if !connectedRow[path.item] && type != .empty {
+                    bubbleGrid.setBubbleType(at: path, toType: .empty)
+                    unconnectedBubbles.append(path)
+                }
+            }
+        }
+        
+        return unconnectedBubbles
+    }
+    
+    //Get a List of Bubbles that are Connected to the Top of the Screen
+    /// Returns:
+    ///  - Dictionary<Int, [Bool]> of a Matrix of whether Bubbles are connected or not
+    private func getConnectedBubbles() -> Dictionary<Int, [Bool]> {
+        let connectedMatrix = initializeConnectedMatrix()
+        var connectedBubbles = connectedMatrix.0
+        var queue = connectedMatrix.1
+        
+        while !queue.isEmpty {
+            let path = try! queue.dequeue()
+            checkSurroudingBubblesIfEmpty(at: path, connectedBubbles: &connectedBubbles)
+        }
+
+        return connectedBubbles
+    }
+    
+    //Initialize the Connected Matrix with "false" values by default
+    //Initialize the first row of the Matrix with "true" if they are not empty
+    /// Returns:
+    ///  - Dictionary<Int, [Bool]> of a Matrix of whether Bubbles are connected or not
+    ///  - Queue of Nodes that are Connected to Parse through
+    private func initializeConnectedMatrix() -> (Dictionary<Int, [Bool]>, Queue<IndexPath>) {
+        var connectedBubbles = Dictionary<Int, [Bool]>()
         var queue = Queue<IndexPath>()
         
         for rowNo in 0..<bubbleGrid.rows {
             connectedBubbles[rowNo] = [Bool]()
+            
             for bubbleNo in 0..<bubbleGrid.noOfItems(at: rowNo) {
-                indexPath = IndexPath(item: bubbleNo, section: rowNo)
-                let bubbleType = bubbleGrid.bubbleType(at: indexPath)
+                let path = IndexPath(item: bubbleNo, section: rowNo)
+                let bubbleType = bubbleGrid.bubbleType(at: path)
                 
-                if rowNo == 0 {
-                    connectedBubbles[rowNo]!.append(bubbleType != .empty)
-                    
-                    if bubbleType != .empty {
-                        queue.enqueue(indexPath)
-                    }
+                if rowNo == 0 && bubbleType != .empty {
+                    queue.enqueue(path)
+                    connectedBubbles[rowNo]!.append(true)
                 } else {
                     connectedBubbles[rowNo]!.append(false)
                 }
             }
         }
         
-        while !queue.isEmpty {
-            indexPath = try! queue.dequeue()
-            checkConnectedBubbles(indexPath: indexPath, connectedBubbles: &connectedBubbles)
-        }
-        
-        var indexes = [IndexPath]()
-        
-        for rowNo in 0..<bubbleGrid.rows {
-            for bubbleNo in 0..<bubbleGrid.noOfItems(at: rowNo) {
-                indexPath = IndexPath(item: bubbleNo, section: rowNo)
-                let isConnected = connectedBubbles[indexPath.section]![indexPath.item]
-                
-                if let type = bubbleGrid.bubbleType(at: indexPath) {
-                    if !isConnected && type != .empty {
-                        bubbleGrid.setBubbleType(at: indexPath, bubbleType: .empty)
-                        indexes.append(indexPath)
-                    }
-                }
-            }
-        }
-        
-        return indexes
+        return (connectedBubbles, queue)
     }
     
-    func checkConnectedBubbles(indexPath: IndexPath, connectedBubbles: inout Dictionary<Int,[Bool]>) {
-        let surroundingIndexes = SurroundingIndexes(at: indexPath)
+    //Check if Bubbles that are Surrounding it are Empty or Not
+    /// Parameters:
+    ///  - path: Path whose surrounding Bubbles have to be checked
+    ///  - connectedBubbles (inout): Matrix of Connected Bubbles
+    private func checkSurroudingBubblesIfEmpty(at path: IndexPath,
+                                               connectedBubbles: inout Dictionary<Int,[Bool]>) {
+        let surroundingIndexes = SurroundingIndexes(at: path)
         
         //Check Row Above
-        checkIfConnected(indexPath: surroundingIndexes.topLeftIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.topLeftIndex,
                          connectedBubbles: &connectedBubbles)
-        checkIfConnected(indexPath: surroundingIndexes.topRightIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.topRightIndex,
                          connectedBubbles: &connectedBubbles)
         //Check Same Row
-        checkIfConnected(indexPath: surroundingIndexes.leftIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.leftIndex,
                          connectedBubbles: &connectedBubbles)
-        checkIfConnected(indexPath: surroundingIndexes.rightIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.rightIndex,
                          connectedBubbles: &connectedBubbles)
         //Check Row Below
-        checkIfConnected(indexPath: surroundingIndexes.bottomLeftIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.bottomLeftIndex,
                          connectedBubbles: &connectedBubbles)
-        checkIfConnected(indexPath: surroundingIndexes.bottomRightIndex,
+        checkBubbleIfEmpty(at: surroundingIndexes.bottomRightIndex,
                          connectedBubbles: &connectedBubbles)
     }
     
-    func checkIfConnected(indexPath: IndexPath, connectedBubbles: inout Dictionary<Int,[Bool]>) {
-        guard indexPath.section > 0 && indexPath.section < connectedBubbles.keys.count else {
+    //Check if the Bubble is empty then update the Matrix
+    /// Parameters:
+    ///  - path: Check if the Bubble at the Position is Empty
+    ///  - connectedBubbles (inout): Matrix of Connected Bubbles
+    private func checkBubbleIfEmpty(at path: IndexPath,
+                                    connectedBubbles: inout Dictionary<Int, [Bool]>) {
+        guard let connectedRow = connectedBubbles[path.section],
+            let type = bubbleGrid.bubbleType(at: path) else {
             return
         }
         
-        guard indexPath.item > 0 && indexPath.item < connectedBubbles[indexPath.section]!.count else {
+        if connectedRow[path.item] == true {
             return
         }
         
-        let isConnected = connectedBubbles[indexPath.section]![indexPath.item]
-        
-        if isConnected {
-            return
+        if type != .empty {
+            connectedBubbles[path.section]![path.item] = true
+            checkSurroudingBubblesIfEmpty(at: path, connectedBubbles: &connectedBubbles)
         }
+    }
+    
+    //Generate a Random Bubble
+    /// Returns:
+    ///  - Bubble that was randomly generated
+    private func generateRandomBubble() -> Bubble {
+        let randomNumber = Int(arc4random_uniform(UInt32(noOfBubbleTypes)))
+        let bubbleType = BubbleType(rawValue: randomNumber)
         
-        if let type = bubbleGrid.bubbleType(at: indexPath) {
-            if type != .empty {
-                connectedBubbles[indexPath.section]![indexPath.item] = true
-                checkConnectedBubbles(indexPath: indexPath,connectedBubbles: &connectedBubbles)
-            }
-        }
+        return Bubble(bubbleType: bubbleType!)
     }
 }

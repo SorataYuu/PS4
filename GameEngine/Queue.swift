@@ -8,7 +8,6 @@ public enum QueueError: Error {
     case emptyQueue
 }
 
-
 /**
  A generic `Queue` class whose elements are first-in, first-out.
 
@@ -19,7 +18,7 @@ public struct Queue<T> {
     
     var queue = [T]()
     
-    public init(){
+    public init() {
         
     }
     
@@ -33,7 +32,7 @@ public struct Queue<T> {
     /// - Returns: item at the head of the queue
     /// - Throws: QueueError.EmptyQueue
     mutating public func dequeue() throws -> T {
-        if queue.isEmpty{
+        if queue.isEmpty {
             throw QueueError.emptyQueue
         }
         
@@ -44,7 +43,7 @@ public struct Queue<T> {
     /// - Returns: item at the head of the queue
     /// - Throws: QueueError.EmptyQueue
     public func peek() throws -> T {
-        if queue.isEmpty{
+        if queue.isEmpty {
             throw QueueError.emptyQueue
         }
         

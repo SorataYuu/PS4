@@ -19,8 +19,8 @@
 		3F9F10A21E436AD20088A47D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10A11E436AD20088A47D /* Constants.swift */; };
 		3F9F10A41E43A1CC0088A47D /* Physics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10A31E43A1CC0088A47D /* Physics.swift */; };
 		3F9F10A61E43A97A0088A47D /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10A51E43A97A0088A47D /* Controller.swift */; };
-		3F9F10A81E48594A0088A47D /* SurroundingIndexes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10A71E48594A0088A47D /* SurroundingIndexes.swift */; };
 		3F9F10AA1E485D540088A47D /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10A91E485D540088A47D /* Queue.swift */; };
+		3F9F10B51E4C7E080088A47D /* SurroundingIndexes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F10B41E4C7E080088A47D /* SurroundingIndexes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,8 +50,8 @@
 		3F9F10A11E436AD20088A47D /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3F9F10A31E43A1CC0088A47D /* Physics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Physics.swift; sourceTree = "<group>"; };
 		3F9F10A51E43A97A0088A47D /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
-		3F9F10A71E48594A0088A47D /* SurroundingIndexes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SurroundingIndexes.swift; path = ../SurroundingIndexes.swift; sourceTree = "<group>"; };
 		3F9F10A91E485D540088A47D /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		3F9F10B41E4C7E080088A47D /* SurroundingIndexes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurroundingIndexes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,16 +94,9 @@
 			isa = PBXGroup;
 			children = (
 				3F748CF61E432DF300B895C0 /* AppDelegate.swift */,
-				3F748CF81E432DF300B895C0 /* ViewController.swift */,
-				3F9F10A51E43A97A0088A47D /* Controller.swift */,
-				3F9F10A91E485D540088A47D /* Queue.swift */,
-				3F9F10A31E43A1CC0088A47D /* Physics.swift */,
-				3F9F109C1E436AC00088A47D /* BubbleCell.swift */,
-				3F9F109B1E436AC00088A47D /* Bubble.swift */,
-				3F9F109D1E436AC00088A47D /* BubbleGrid.swift */,
-				3F9F10A11E436AD20088A47D /* Constants.swift */,
-				3F9F10A71E48594A0088A47D /* SurroundingIndexes.swift */,
-				3F748CFA1E432DF300B895C0 /* Main.storyboard */,
+				3F9F10B01E4C39AA0088A47D /* View */,
+				3F9F10B11E4C39B50088A47D /* Controller */,
+				3F9F10B21E4C39C00088A47D /* Model */,
 				3F748CFD1E432DF300B895C0 /* Assets.xcassets */,
 				3F748CFF1E432DF300B895C0 /* LaunchScreen.storyboard */,
 				3F748D021E432DF300B895C0 /* Info.plist */,
@@ -120,6 +113,37 @@
 			path = GameEngineUITests;
 			sourceTree = "<group>";
 		};
+		3F9F10B01E4C39AA0088A47D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				3F9F109C1E436AC00088A47D /* BubbleCell.swift */,
+				3F748CF81E432DF300B895C0 /* ViewController.swift */,
+				3F748CFA1E432DF300B895C0 /* Main.storyboard */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		3F9F10B11E4C39B50088A47D /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				3F9F10A51E43A97A0088A47D /* Controller.swift */,
+				3F9F10A31E43A1CC0088A47D /* Physics.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		3F9F10B21E4C39C00088A47D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3F9F10A91E485D540088A47D /* Queue.swift */,
+				3F9F109B1E436AC00088A47D /* Bubble.swift */,
+				3F9F109D1E436AC00088A47D /* BubbleGrid.swift */,
+				3F9F10A11E436AD20088A47D /* Constants.swift */,
+				3F9F10B41E4C7E080088A47D /* SurroundingIndexes.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -130,6 +154,7 @@
 				3F748CEF1E432DF200B895C0 /* Sources */,
 				3F748CF01E432DF200B895C0 /* Frameworks */,
 				3F748CF11E432DF200B895C0 /* Resources */,
+				3F9F10B31E4C70D80088A47D /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -220,6 +245,22 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3F9F10B31E4C70D80088A47D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		3F748CEF1E432DF200B895C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -230,9 +271,9 @@
 				3F748CF71E432DF300B895C0 /* AppDelegate.swift in Sources */,
 				3F9F10A21E436AD20088A47D /* Constants.swift in Sources */,
 				3F9F109E1E436AC00088A47D /* Bubble.swift in Sources */,
+				3F9F10B51E4C7E080088A47D /* SurroundingIndexes.swift in Sources */,
 				3F9F10AA1E485D540088A47D /* Queue.swift in Sources */,
 				3F9F10A41E43A1CC0088A47D /* Physics.swift in Sources */,
-				3F9F10A81E48594A0088A47D /* SurroundingIndexes.swift in Sources */,
 				3F9F10A01E436AC00088A47D /* BubbleGrid.swift in Sources */,
 				3F9F10A61E43A97A0088A47D /* Controller.swift in Sources */,
 			);

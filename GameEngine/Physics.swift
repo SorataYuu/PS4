@@ -6,9 +6,18 @@
 //  Copyright © 2017 nus.cs3217.a0139963n. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
+/**
+ Physics, used for Path Calculation and Collision Detection
+ 
+ Variables:
+ - bubbleSize: Size of a Bubble
+ - screenWidth: Width of the Screen
+ - screenHeight: Height of the Screen
+ - bubblePositions: Dictionary containing CGPoints of the corresponding bubbles
+ - bubbleGrid: Reference to the active BubbleGrid in Controller
+ */
 class Physics {
     
     private (set) var bubbleSize: CGFloat!
@@ -17,28 +26,30 @@ class Physics {
     private (set) var bubblePositions: Dictionary<Int, [CGPoint]>!
     private (set) var bubbleGrid: BubbleGrid
     
-    init(bubbleGrid: BubbleGrid){
+    //Default Initializer
+    /// Parameters:
+    ///  - bubbleGrid: Reference to the active BubbleGrid in Controller
+    ///  - bubbleSize: Size of a Bubble
+    ///  - bubblePositions: Dictionary containing CGPoints of the corresponding bubbles
+    ///  - screenWidth: Width of the Screen
+    ///  - screenHeight: Height of the Screen
+    init(bubbleGrid: BubbleGrid, bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
         self.bubbleGrid = bubbleGrid
-    }
-    
-    func setVisualVariables(bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
         self.bubbleSize = bubbleSize
         self.bubblePositions = bubblePositions
         self.screenWidth = screenWidth
         self.screenHeight = screenHeight
     }
     
-    private func createCollisionRectangle(centerPos: CGPoint) -> CGRect {
-        var newOrigin = CGPoint()
-        newOrigin.x = centerPos.x - (bubbleSize / 2)
-        newOrigin.y = centerPos.y - (bubbleSize / 2)
-        
-        let newSize = CGSize(width: bubbleSize, height: bubbleSize)
-        
-        return CGRect(origin: newOrigin, size: newSize)
-    }
-    
-    func calculateBubblePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
+    //Calculate the Path of the Projectile
+    /// Parameters:
+    ///  - origin: The Original Position of the Projectile
+    ///  - tapped: The Point where the User Tapped
+    /// Returns:
+    ///  - CGPath of the Path the Projectile should take
+    ///  - CGFloat of the total distance travelled by the Path
+    ///  - IndexPath of the final Index where the Projectile ends
+    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
         let path = CGMutablePath()
         
         var points = [CGPoint]()
@@ -49,6 +60,10 @@ class Physics {
         
         var closestBubble = IndexPath()
         
+        //Calculate the next point along the CGPath
+        //If it's a Wall continue finding the next point
+        //Until a Bubble or Top Collision
+        //Then Find the Closest Bubble Slot and snap to it
         while true {
             let nextPoint = calculateNextPoint(origin: current, xyRatio: xyRatio)
             points.append(nextPoint.0)
@@ -70,7 +85,42 @@ class Physics {
         return (path, totalDistance, closestBubble)
     }
     
-    func calculateTotalDistance(points: [CGPoint], origin: CGPoint) -> CGFloat {
+    //Calculate the Next Point along the CGPath
+    /// Parameters:
+    ///  - origin: The Original Position of the Projectile
+    ///  - xyRatio: The amount X changes for each unit of Y
+    /// Returns:
+    ///  - CGPoint of the next Point
+    ///  - CollisionType of what kind of Collision it is (Wall, Top, Bubble)
+    private func calculateNextPoint(origin: CGPoint, xyRatio: CGFloat) -> (CGPoint, CollisionType) {
+        var nextPoint = origin
+        nextPoint.x += xyRatio
+        nextPoint.y -= 1
+        
+        var colType = CollisionType.none
+        
+        //Continue moving up by 1 unit in Y if the point is not a collision
+        while true {
+            colType = checkPointValidity(point: nextPoint)
+            
+            guard colType == .none else {
+                break
+            }
+            
+            nextPoint.x += xyRatio
+            nextPoint.y -= 1
+        }
+        
+        return (nextPoint, colType)
+    }
+    
+    //Calculate the Distance of the CGPath
+    /// Parameters:
+    ///  - points: The Points along a CGPath
+    ///  - origin: The Point where the CGPath Starts
+    /// Returns:
+    ///  - CGFloat of the total distance travelled by the Path
+    private func calculateTotalDistance(points: [CGPoint], origin: CGPoint) -> CGFloat {
         var totalDistance = CGFloat(0)
         var previousPoint = origin
         
@@ -84,45 +134,35 @@ class Physics {
         return totalDistance
     }
     
-    func calculateNextPoint(origin: CGPoint, xyRatio: CGFloat) -> (CGPoint, CollisionType) {
-        var nextPoint = origin
-        nextPoint.x += xyRatio
-        nextPoint.y -= 1
-        
-        var colType = CollisionType.none
-        
-        while true {
-            colType = checkPointValidity(point: nextPoint)
-            
-            if colType == .none {
-                nextPoint.x += xyRatio
-                nextPoint.y -= 1
-            } else {
-                break
-            }
-        }
-        
-        return (nextPoint, colType)
-    }
-    
-    func checkPointValidity(point: CGPoint) -> CollisionType {
+    //Check if a Point is Valid or it Collides
+    /// Parameters:
+    ///  - point: The Point to be checked
+    /// Returns:
+    ///  - CollisionType the type of Collision for the Point
+    private func checkPointValidity(point: CGPoint) -> CollisionType {
         let collidedWithWall = checkCollidedWithWall(point: point)
         let collidedWithTop = checkCollidedWithTop(point: point)
         let collidedWithBubble = checkCollidedWithBubble(point: point)
+        
         var colType = CollisionType.none
         
-        if collidedWithWall == true {
+        if collidedWithWall {
             colType = .wall
-        } else if collidedWithTop == true {
+        } else if collidedWithTop {
             colType = .top
-        } else if collidedWithBubble == true {
+        } else if collidedWithBubble {
             colType = .bubble
         }
         
         return colType
     }
     
-    func checkCollidedWithWall(point: CGPoint) -> Bool {
+    //Check if a Point Collides with the Wall
+    /// Parameters:
+    ///  - point: The Point to be checked
+    /// Returns:
+    ///  - Bool of whether the point collides with the Wall
+    private func checkCollidedWithWall(point: CGPoint) -> Bool {
         let leftWallX = bubbleSize/2
         let rightWallX = screenWidth - bubbleSize/2
         
@@ -133,7 +173,12 @@ class Physics {
         return false
     }
     
-    func checkCollidedWithTop(point: CGPoint) -> Bool {
+    //Check if a Point Collides with the Top
+    /// Parameters:
+    ///  - point: The Point to be checked
+    /// Returns:
+    ///  - Bool of whether the point collides with the Top
+    private func checkCollidedWithTop(point: CGPoint) -> Bool {
         let topY = bubbleSize/2
         
         if point.y <= topY {
@@ -143,7 +188,12 @@ class Physics {
         return false
     }
     
-    func checkCollidedWithBubble(point: CGPoint) -> Bool {
+    //Check if a Point Collides with a Bubble
+    /// Parameters:
+    ///  - point: The Point to be checked
+    /// Returns:
+    ///  - Bool of whether the point collides with a Bubble
+    private func checkCollidedWithBubble(point: CGPoint) -> Bool {
         for rowNo in 0..<bubblePositions.keys.count {
             for bubbleNo in 0..<bubblePositions[rowNo]!.count {
                 let bubblePos = bubblePositions[rowNo]![bubbleNo]
@@ -161,14 +211,19 @@ class Physics {
         return false
     }
     
-    func getClosestEmptyBubblePos(point: CGPoint) -> IndexPath {
+    //Get the Closest Empty Bubble Slot
+    /// Parameters:
+    ///  - point: The Point that needs to be closest to
+    /// Returns:
+    ///  - IndexPath of the Empty Bubble Slot
+    private func getClosestEmptyBubblePos(point: CGPoint) -> IndexPath {
         var indexPath = IndexPath()
         
         for rowNo in 0..<bubblePositions.keys.count {
             for bubbleNo in 0..<bubblePositions[rowNo]!.count {
                 indexPath = IndexPath(item: bubbleNo, section: rowNo)
                 
-                guard let bubblePos = getPos(at: indexPath) else {
+                guard let bubblePos = getPoint(at: indexPath) else {
                     continue
                 }
                 
@@ -188,7 +243,13 @@ class Physics {
         return indexPath
     }
     
-    func getClosestSurroundingBubble(at indexPath: IndexPath, point: CGPoint) -> IndexPath {
+    //Get the Closest of the Surrounding Bubbles
+    /// Parameters:
+    ///  - indexPath: The Bubble to be checked
+    ///  - point: The Point to be checked against
+    /// Returns:
+    ///  - IndexPath of the Closest Bubble Slot
+    private func getClosestSurroundingBubble(at indexPath: IndexPath, point: CGPoint) -> IndexPath {
         var closestDistance = CGFloat.greatestFiniteMagnitude
         var closestIndex = IndexPath()
         let si = SurroundingIndexes(at: indexPath)
@@ -209,25 +270,45 @@ class Physics {
         return closestIndex
     }
     
-    private func shorterDistance(from point: CGPoint, to index: IndexPath, closestDistance: inout CGFloat, closestIndex: inout IndexPath) {
-        if let pos = getPos(at: index) {
-            let distance = distanceBetweenPoints(pointA: point, pointB: pos)
-            if distance < closestDistance {
-                closestDistance = distance
-                closestIndex = index
-            }
-        }
-    }
-    
-    private func getPos(at indexPath: IndexPath) -> CGPoint? {
-        if let rowNo = bubblePositions[indexPath.section] {
-            return rowNo[indexPath.item]
+    //Check if the Bubble is closer than the closest bubble
+    /// Parameters:
+    ///  - point: The Point to be checked against
+    ///  - indexPath: The Bubble to be checked
+    ///  - closestDistance (inout): The current closest distance to the point
+    ///  - closestIndex (inout): The current closest Bubble to the point
+    private func shorterDistance(from point: CGPoint, to indexPath: IndexPath, closestDistance: inout CGFloat, closestIndex: inout IndexPath) {
+        guard let pos = getPoint(at: indexPath), let type = bubbleGrid.bubbleType(at: indexPath) else {
+            return
         }
         
-        return nil
+        let distance = distanceBetweenPoints(pointA: point, pointB: pos)
+        
+        if distance < closestDistance && type == .empty {
+            closestDistance = distance
+            closestIndex = indexPath
+        }
     }
     
-    private func getCenterPos(originAt: CGPoint) -> CGPoint{
+    //Get the Point of a Bubble
+    /// Parameters:
+    ///  - indexPath: The Bubble to be retrieved
+    /// Returns:
+    ///  - CGPoint of the bubble's position
+    private func getPoint(at indexPath: IndexPath) -> CGPoint? {
+        guard let row = bubblePositions[indexPath.section],
+            indexPath.item >= 0 && indexPath.item < row.count else {
+            return nil
+        }
+        
+        return row[indexPath.item]
+    }
+    
+    //Get the Center Position of a Bubble from its Origin Point
+    /// Parameters:
+    ///  - originAt: The Origin Position of the Bubble
+    /// Returns:
+    ///  - CGPoint of the Bubble's Center Position
+    private func getCenterPos(originAt: CGPoint) -> CGPoint {
         var center = CGPoint()
         center.x = originAt.x + (bubbleSize/2)
         center.y = originAt.y + (bubbleSize/2)
@@ -235,6 +316,12 @@ class Physics {
         return center
     }
     
+    //Get the XYRatio that is the amount X changes with a unit of Y
+    /// Parameters:
+    ///  - pointA: Origin Point
+    ///  - pointB: Destination Point
+    /// Returns:
+    ///  - CGFloat of the XYRatio
     private func calculateXYRatio(pointA: CGPoint, pointB: CGPoint) -> CGFloat {
         let directionOffsetX = pointB.x - pointA.x
         let directionOffsetY = abs(pointB.y - pointA.y)
@@ -242,12 +329,17 @@ class Physics {
         return directionOffsetX / directionOffsetY
     }
 
-    
+    //Get the Distance between two points using
     //Pythagoras aSquared + bSquared = cSquared
+    /// Parameters:
+    ///  - pointA: Origin Point
+    ///  - pointB: Destination Point
+    /// Returns:
+    ///  - CGFloat of the Distance between two points
     private func distanceBetweenPoints(pointA: CGPoint, pointB: CGPoint) -> CGFloat {
         let aSquared =  (pointA.x - pointB.x) * (pointA.x - pointB.x)
         let bSquared =  (pointA.y - pointB.y) * (pointA.y - pointB.y)
         
-        return abs(sqrt(aSquared + bSquared))
+        return sqrt(aSquared + bSquared)
     }
 }

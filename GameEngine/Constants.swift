@@ -6,7 +6,6 @@
 //  Copyright © 2017 nus.cs3217.a0101010. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 /**
@@ -19,7 +18,7 @@ let oddRowBubbleCount = 11
 let evenRowBubbleCount = 12
 let bottomOffsetForRows = CGFloat(-0.26)
 let cellRadiusOffset = CGFloat(-0.001)
-let defaultNoOfRows = 9
+let defaultNoOfRows = 20
 let frameInterval = 1
 let speedPerPixel = CGFloat(1000)
 let plistFileName = "Levels.plist"
@@ -66,6 +65,7 @@ enum PaletteButton: Int {
     case reset = 5
 }
 
+//Enum of the different types of Collisions along a Projectile's Path
 enum CollisionType {
     case wall
     

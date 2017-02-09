@@ -8,13 +8,21 @@
 
 import Foundation
 
+/**
+ SurroundingIndexes, Struct to easily access Indexes of the Surrounding Bubbles
+ 
+ Variables:
+ - index: IndexPath of a Bubble
+ */
 struct SurroundingIndexes {
     private (set) var index: IndexPath
     
+    //Default Initialization to save the IndexPath
     init(at indexPath: IndexPath) {
         self.index = indexPath
     }
     
+    //Retrieve the Top Left Index based on whether the bubble was in an odd or even row
     var topLeftIndex: IndexPath {
         if index.section % 2 == 0 {
             return IndexPath(item: index.item - 1, section: index.section - 1)
@@ -23,6 +31,7 @@ struct SurroundingIndexes {
         }
     }
     
+    //Retrieve the Top Right Index based on whether the bubble was in an odd or even row
     var topRightIndex: IndexPath {
         if index.section % 2 == 0 {
             return IndexPath(item: index.item, section: index.section - 1)
@@ -31,14 +40,17 @@ struct SurroundingIndexes {
         }
     }
     
+    //Retrieve Left Bubble
     var leftIndex: IndexPath {
         return IndexPath(item: index.item - 1, section: index.section)
     }
     
+    //Retrieve Right Bubble
     var rightIndex: IndexPath {
         return IndexPath(item: index.item + 1, section: index.section)
     }
     
+    //Retrieve the Bottom Left Index based on whether the bubble was in an odd or even row
     var bottomLeftIndex: IndexPath {
         if index.section % 2 == 0 {
             return IndexPath(item: index.item - 1, section: index.section + 1)
@@ -47,6 +59,7 @@ struct SurroundingIndexes {
         }
     }
     
+    //Retrieve the Bottom Right Index based on whether the bubble was in an odd or even row
     var bottomRightIndex: IndexPath {
         if index.section % 2 == 0 {
             return IndexPath(item: index.item, section: index.section + 1)

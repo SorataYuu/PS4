@@ -15,6 +15,5 @@ import UIKit
     - bubbleImageView: Image View to display the Bubble Image
  */
 class BubbleCell: UICollectionViewCell {
-    
     @IBOutlet weak var bubbleImageView: UIImageView!
 }
