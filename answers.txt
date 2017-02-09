@@ -20,17 +20,43 @@ Please save your diagram as `class-diagram.png` in the root directory of the rep
 # Problem 1.2 #
 ###############
 
-Your Answer here.
+I would extend the logic within the Controller part of the Design. For example, to support removing all bubbles of the same color would just require that I go through all the bubbles, and replace all the bubbles of that color with empty. Then I would use an existing method to drop unconnected bubbles, and everything would be working.
+
+I believe that I have designed methods to be sufficiently generic enough that they can be easily reused in a multitude of situations. 
+
+If I am required to do further manipulation of the bubble grid as mentioned above, I may extend a new BubbleGridManipulator class that would encompass all the logic of handling and changing the values of a Bubble Grid in order to tidy up the logic. 
+
+I believe that the View and Model are separate enough from the Controller that it is simple enough to easily extend and add more functionality in while leveraging on existing functions that have already been coded.
 
 ###############
 # Problem 2.1 #
 ###############
 
-Your Answer here
+The user taps on the direction that he wants the bubble to shoot towards, and the game would launch the projectile in the direction that the user taps. Similar to how many of the current games work, it is the most intuitive, and gives players a good sense of control over where the bubble would shoot.
 
 
 ######################
 # Problem 3: Testing #
 ######################
 
-Your Answer here
+Black-Box Testing:
+- Able to Shoot Bubble
+  - Direction chosen by Tap
+  - Sticks onto the Top
+  - Bubble Refills after Shot
+- Collisions
+  - Bounces of Walls
+  - Sticks to Top of Screen
+  - Sticks to a Bubble
+- Snaps to an Empty Slot
+- 3 or More connected Bubbles Shrink and Disappear
+  - Unconnected Bubbles fall down
+
+Glass-Box Testing:
+- Correct Animations:
+  - Expansion for Projectile
+  - Shrinking for Disappearing Bubbles
+  - Falling for Unconnected Bubbles
+- Projectiles change colors randomly
+- Bubbles travel at Constant Speeds
+- Cannot Shoot again while bubble is travelling or animation ongoing
