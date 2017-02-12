@@ -16,17 +16,17 @@ import Foundation
     and the Values being a List of Bubbles
  */
 class BubbleGrid: NSObject, NSCoding {
-    private var bubbleGrid: Dictionary<Int, [Bubble]>
+    private var bubbleGrid: [Int: [Bubble]]
     
     //Default Initialization creates a BubbleGrid of Empty bubbles 
     //with the default rows and columns
     override init() {
-        bubbleGrid = Dictionary<Int, [Bubble]>()
+        bubbleGrid = [Int: [Bubble]]()
         
-        for row in 0...defaultNoOfRows {
+        for row in 0...Constants.defaultNoOfRows {
             bubbleGrid[row] = [Bubble]()
             
-            for _ in 1...oddRowBubbleCount {
+            for _ in 1...Constants.oddRowBubbleCount {
                 bubbleGrid[row]!.append(Bubble(bubbleType: BubbleType.empty))
             }
             
@@ -112,10 +112,10 @@ class BubbleGrid: NSObject, NSCoding {
     
     //Helper method for deserialization
     required init(coder aDecoder: NSCoder) {
-        if let bubbleGrid = aDecoder.decodeObject(forKey: "bubbleGrid") as? Dictionary<Int,[Bubble]> {
+        if let bubbleGrid = aDecoder.decodeObject(forKey: "bubbleGrid") as? [Int: [Bubble]] {
             self.bubbleGrid = bubbleGrid
         } else {
-            self.bubbleGrid = Dictionary<Int, [Bubble]>()
+            self.bubbleGrid = [Int: [Bubble]]()
         }
     }
 }

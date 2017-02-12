@@ -15,16 +15,16 @@ import UIKit
  - gameArea: The IBOutlet for the UIView of the whole screen
  - bubbleCollectionView: The IBOutlet of the UICollectionView for the Grid of Bubbles
  - bubbleSize: Size of the Bubbles on Screen
- - con: Reference to the Controller class
+ - controller: Reference to the Controller class
  - projectile: Reference to the Projectile displayed on screen
  */
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class ViewController: UIViewController {
 
     @IBOutlet weak var gameArea: UIView!
     @IBOutlet weak var bubbleCollectionView: UICollectionView!
     
     var bubbleSize: CGFloat!
-    var con: Controller!
+    var controller: Controller!
     var projectile = UIImageView()
     
     //Initial Method to run
@@ -33,7 +33,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         setUpGameArea()
         
-        con = Controller(self)
+        controller = Controller(self)
     }
     
     //Set up the Game Area
@@ -41,10 +41,11 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         bubbleCollectionView.delegate = self
         bubbleCollectionView.dataSource = self
         
-        bubbleSize = gameArea.frame.width / CGFloat(evenRowBubbleCount)
+        bubbleSize = gameArea.frame.width / CGFloat(Constants.evenRowBubbleCount)
         
         gameArea.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(self.gameAreaTapped)))
+            UITapGestureRecognizer(target: self,
+                                   action: #selector(self.gameAreaTapped)))
     }
     
     //Make Game Full Screen
@@ -55,15 +56,17 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     //Obtain the Initialization Variables for the Physics Engine
     override func viewWillAppear(_ animated: Bool) {
         let bubblePositions = self.getBubblePositions()
-        con.setupPhysics(bubbleSize: bubbleSize, bubblePositions: bubblePositions,
-                                screenWidth: gameArea.frame.width, screenHeight: gameArea.frame.height)
+        controller.setupPhysics(bubbleSize: bubbleSize,
+                                bubblePositions: bubblePositions,
+                                screenWidth: gameArea.frame.width,
+                                screenHeight: gameArea.frame.height)
     }
     
     //Obtain the Positions of the Bubbles Slots on the Screen
     /// Returns:
     ///  - Dictionary<Int, [CGPoint]> of a Matrix of Positions for the Bubble Slots
-    private func getBubblePositions() -> Dictionary<Int, [CGPoint]> {
-        var bubblePositions = Dictionary<Int, [CGPoint]>()
+    private func getBubblePositions() -> [Int: [CGPoint]] {
+        var bubblePositions = [Int: [CGPoint]]()
         
         for sectionNo in 0..<bubbleCollectionView.numberOfSections {
             bubblePositions[sectionNo] = [CGPoint]()
@@ -105,11 +108,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         enableInteraction(isEnabled: false)
         
         let tappedPoint = sender.location(in: gameArea)
-        let path = con.calculateProjectilePath(origin: projectile.center, tapped: tappedPoint)
+        let path = controller.calculateProjectilePath(origin: projectile.center,
+                                                      tapped: tappedPoint)
         
         CATransaction.begin()
         CATransaction.setCompletionBlock({
-            self.con.shootFinished(destination: path.2)
+            self.controller.shootFinished(destination: path.2)
         })
         
         animateShoot(node: projectile, path: path.0, distance: path.1)
@@ -126,7 +130,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         for indexPath in indexPaths {
             if let bubble = bubbleCollectionView.cellForItem(at: indexPath) {
                 CATransaction.setCompletionBlock({
-                    self.con.shrinkFinished(at: indexPath)
+                    self.controller.shrinkFinished(at: indexPath)
                     bubble.layer.removeAllAnimations()
                 })
                 
@@ -147,7 +151,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 let originalPosition = bubble.center
                 
                 CATransaction.setCompletionBlock({
-                    self.con.dropFinished(at: indexPath)
+                    self.controller.dropFinished(at: indexPath)
                     bubble.center = originalPosition
                     bubble.layer.removeAllAnimations()
                 })
@@ -168,9 +172,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         keyframeAnimation.path = path
         keyframeAnimation.fillMode = kCAFillModeForwards
         keyframeAnimation.isRemovedOnCompletion = false
-        keyframeAnimation.duration = Double(distance/speedPerPixel)
+        keyframeAnimation.duration = Double(distance/Constants.speedPerPixel)
         keyframeAnimation.calculationMode = kCAAnimationCubicPaced
         
+        //Named move
         node.layer.add(keyframeAnimation, forKey: "move")
         
         node.layer.position = path.currentPoint
@@ -188,6 +193,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         animation.fillMode = kCAFillModeForwards
         animation.isRemovedOnCompletion = false
         
+        //Named expand
         node.layer.add(animation, forKey: "expand")
     }
     
@@ -202,6 +208,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         animation.fillMode = kCAFillModeForwards
         animation.isRemovedOnCompletion = false
         
+        //Named shrink
         node.layer.add(animation, forKey: "shrink")
     }
     
@@ -234,11 +241,11 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     /// Parameters:
     ///  - indexPath: Bubble to be updated
     func updateBubbleColor(at indexPath: IndexPath) {
-        if con.bubbleGrid.bubbleType(at: indexPath) == .empty {
+        if controller.getBubbleType(at: indexPath) == .empty {
             let bubbleCell = bubbleCollectionView.cellForItem(at: indexPath) as! BubbleCell
             bubbleCell.bubbleImageView.image = nil
         } else {
-            if let imageName = con.bubbleGrid.bubbleImageName(at: indexPath) {
+            if let imageName = controller.getBubbleImageName(at: indexPath) {
                 let backgroundImage = UIImage(named: imageName)
                 
                 let bubbleCell = bubbleCollectionView.cellForItem(at: indexPath) as! BubbleCell
@@ -250,13 +257,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
 // MARK: - UICollectionViewDataSource
 // Code based of https://www.raywenderlich.com/136159/uicollectionview-tutorial-getting-started
-extension ViewController {
+extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     //Determines the number of rows in the grid
     //In this case each row is a section in the Collection View
     //Number of Rows corresponds with the Number of Rows in the BubbleGrid
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return con.bubbleGrid.rows
+        return controller.getNoOfRows()
     }
     
     //Determines the number of item in each row
@@ -264,18 +271,18 @@ extension ViewController {
     //in the row of the BubbleGrid
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        return con.bubbleGrid.noOfItems(at: section)
+        return controller.getNoOfItems(at: section)
     }
     
     //Handles the creation of a cell in the Collection View
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         //Create a BubbleCell
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier,
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.reuseIdentifier,
                                                       for: indexPath) as! BubbleCell
         
         //Assign the image of the bubble to the Image View within the BubbleCell
-        if con.bubbleGrid.bubbleType(at: indexPath) != .empty {
-            if let imageName = con.bubbleGrid.bubbleImageName(at: indexPath) {
+        if controller.getBubbleType(at: indexPath) != .empty {
+            if let imageName = controller.getBubbleImageName(at: indexPath) {
                 let backgroundImage = UIImage(named: imageName)
                 cell.bubbleImageView.image = backgroundImage
             }
@@ -296,7 +303,7 @@ extension ViewController : UICollectionViewDelegateFlowLayout {
         //Since the Bubbles are tightly packed from edge to edge on the even row
         //The size of the Bubble would be based on squeezing all bubbles in the even row
         let availableWidth = bubbleCollectionView.frame.width
-        let widthPerItem = availableWidth / CGFloat(evenRowBubbleCount)
+        let widthPerItem = availableWidth / CGFloat(Constants.evenRowBubbleCount)
         
         return CGSize(width: widthPerItem, height: widthPerItem)
     }
@@ -308,17 +315,17 @@ extension ViewController : UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
         let viewWidth = bubbleCollectionView.frame.width
-        let cellWidth = viewWidth / CGFloat(evenRowBubbleCount)
+        let cellWidth = viewWidth / CGFloat(Constants.evenRowBubbleCount)
         
         //Small Offset for Cell Radius Padding, display glitch occurs on iPhone SE prbably due to rounding
-        let cellRadius = CGFloat((cellWidth/2 + cellRadiusOffset))
-        let bottomInset = CGFloat(bottomOffsetForRows * cellRadius)
+        let cellRadius = CGFloat((cellWidth / 2 + Constants.cellRadiusOffset))
+        let bottomInset = CGFloat(Constants.bottomOffsetForRows * cellRadius)
         
         //Offset by the radius of a bubble on Odd Rows
         if section % 2 == 0 {
-            return UIEdgeInsetsMake(0, 0, bottomInset, 0)
+            return UIEdgeInsets.init(top: 0, left: 0, bottom: bottomInset, right: 0)
         } else {
-            return UIEdgeInsetsMake(0, cellRadius, bottomInset, cellRadius)
+            return UIEdgeInsets.init(top: 0, left: cellRadius, bottom: bottomInset, right: cellRadius)
         }
     }
     

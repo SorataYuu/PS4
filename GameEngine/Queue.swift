@@ -10,7 +10,8 @@ public enum QueueError: Error {
 
 /**
  A generic `Queue` class whose elements are first-in, first-out.
-
+ Copied from PS1
+ 
  - Authors: CS3217
  - Date: 2017
  */

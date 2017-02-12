@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F325FBF1E50A9180039B340 /* BubbleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FBE1E50A9180039B340 /* BubbleType.swift */; };
+		3F325FC11E50A94D0039B340 /* CollisionTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FC01E50A94D0039B340 /* CollisionTypes.swift */; };
 		3F748CF71E432DF300B895C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748CF61E432DF300B895C0 /* AppDelegate.swift */; };
 		3F748CF91E432DF300B895C0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748CF81E432DF300B895C0 /* ViewController.swift */; };
 		3F748CFC1E432DF300B895C0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F748CFA1E432DF300B895C0 /* Main.storyboard */; };
@@ -34,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F325FBE1E50A9180039B340 /* BubbleType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleType.swift; sourceTree = "<group>"; };
+		3F325FC01E50A94D0039B340 /* CollisionTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollisionTypes.swift; sourceTree = "<group>"; };
 		3F748CF31E432DF300B895C0 /* GameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F748CF61E432DF300B895C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3F748CF81E432DF300B895C0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -139,6 +143,8 @@
 				3F9F109B1E436AC00088A47D /* Bubble.swift */,
 				3F9F109D1E436AC00088A47D /* BubbleGrid.swift */,
 				3F9F10A11E436AD20088A47D /* Constants.swift */,
+				3F325FC01E50A94D0039B340 /* CollisionTypes.swift */,
+				3F325FBE1E50A9180039B340 /* BubbleType.swift */,
 				3F9F10B41E4C7E080088A47D /* SurroundingIndexes.swift */,
 			);
 			name = Model;
@@ -270,9 +276,11 @@
 				3F9F109F1E436AC00088A47D /* BubbleCell.swift in Sources */,
 				3F748CF71E432DF300B895C0 /* AppDelegate.swift in Sources */,
 				3F9F10A21E436AD20088A47D /* Constants.swift in Sources */,
+				3F325FBF1E50A9180039B340 /* BubbleType.swift in Sources */,
 				3F9F109E1E436AC00088A47D /* Bubble.swift in Sources */,
 				3F9F10B51E4C7E080088A47D /* SurroundingIndexes.swift in Sources */,
 				3F9F10AA1E485D540088A47D /* Queue.swift in Sources */,
+				3F325FC11E50A94D0039B340 /* CollisionTypes.swift in Sources */,
 				3F9F10A41E43A1CC0088A47D /* Physics.swift in Sources */,
 				3F9F10A01E436AC00088A47D /* BubbleGrid.swift in Sources */,
 				3F9F10A61E43A97A0088A47D /* Controller.swift in Sources */,

@@ -8,70 +8,18 @@
 
 import UIKit
 
-/**
- Constants File containing Global Level Settings and Enums
- */
-
 //Set of Global Constants for the Game Settings
-let reuseIdentifier = "bubbleCell"
-let oddRowBubbleCount = 11
-let evenRowBubbleCount = 12
-let bottomOffsetForRows = CGFloat(-0.26)
-let cellRadiusOffset = CGFloat(-0.001)
-let defaultNoOfRows = 20
-let frameInterval = 1
-let speedPerPixel = CGFloat(1000)
-let plistFileName = "Levels.plist"
-let noOfBubbleTypes = 4
-
-//Enum of the different BubbleTypes with the imageName as raw value
-enum BubbleType: Int {
-    case blue = 0
-    
-    case red = 1
-    
-    case green = 2
-    
-    case orange = 3
-    
-    case empty = 4
-}
-
-//Enum of the different states of the Palette with the Palette Tag as raw value
-enum PaletteState: Int {
-    case none = 0
-    
-    case blue = 1
-    
-    case red = 2
-    
-    case green = 3
-    
-    case orange = 4
-    
-    case erase = 5
-}
-
-//Enum of the different buttons on the Palette with the Button Tag as raw value
-enum PaletteButton: Int {
-    case start = 1
-    
-    case save = 2
-    
-    case delete = 3
-    
-    case load = 4
-    
-    case reset = 5
-}
-
-//Enum of the different types of Collisions along a Projectile's Path
-enum CollisionType {
-    case wall
-    
-    case top
-    
-    case bubble
-    
-    case none
+class Constants {
+    static let reuseIdentifier = "bubbleCell"
+    static let oddRowBubbleCount = 11
+    static let evenRowBubbleCount = 12
+    //Approximated Constant Calculated from Hexagonal Packing
+    static let bottomOffsetForRows = CGFloat(-0.26)
+    //Used to prevent rounding errors
+    static let cellRadiusOffset = CGFloat(-0.001)
+    //Set as default
+    static let defaultNoOfRows = 20
+    //Constant based on trials for an appropriate visual animation speed
+    static let speedPerPixel = CGFloat(1000)
+    static let noOfBubbleTypes = 4
 }

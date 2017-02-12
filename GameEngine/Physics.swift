@@ -23,7 +23,7 @@ class Physics {
     private (set) var bubbleSize: CGFloat!
     private (set) var screenWidth: CGFloat!
     private (set) var screenHeight: CGFloat!
-    private (set) var bubblePositions: Dictionary<Int, [CGPoint]>!
+    private (set) var bubblePositions: [Int: [CGPoint]]!
     private (set) var bubbleGrid: BubbleGrid
     
     //Default Initializer
@@ -33,7 +33,7 @@ class Physics {
     ///  - bubblePositions: Dictionary containing CGPoints of the corresponding bubbles
     ///  - screenWidth: Width of the Screen
     ///  - screenHeight: Height of the Screen
-    init(bubbleGrid: BubbleGrid, bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
+    init(bubbleGrid: BubbleGrid, bubbleSize: CGFloat, bubblePositions: [Int: [CGPoint]], screenWidth: CGFloat, screenHeight: CGFloat) {
         self.bubbleGrid = bubbleGrid
         self.bubbleSize = bubbleSize
         self.bubblePositions = bubblePositions

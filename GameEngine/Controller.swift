@@ -15,21 +15,21 @@ import UIKit
  Variables:
  - bubbleGrid: The Active BubbleGrid
  - projectile: Model of the Projectile
- - vc: Reference to the ViewController
+ - viewController: Reference to the ViewController
  - physics: Reference to the Physics Engine
  */
 class Controller {
-    private (set) var bubbleGrid = BubbleGrid()
+    private var bubbleGrid = BubbleGrid()
     private (set) var projectile = Bubble(bubbleType: .empty)
     
-    private var vc: ViewController
+    private var viewController: ViewController
     private var physics: Physics!
     
     //Default Initializer
     /// Parameters:
     ///  - viewController: Reference to the ViewController
     init(_ viewController: ViewController) {
-        vc = viewController
+        self.viewController = viewController
         
         createNewProjectile()
     }
@@ -40,14 +40,17 @@ class Controller {
     ///  - bubblePositions: Dictionary containing CGPoints of the corresponding bubbles
     ///  - screenWidth: Width of the Screen
     ///  - screenHeight: Height of the Screen
-    func setupPhysics(bubbleSize: CGFloat, bubblePositions: Dictionary<Int, [CGPoint]>, screenWidth: CGFloat, screenHeight: CGFloat) {
-        physics = Physics(bubbleGrid: bubbleGrid, bubbleSize: bubbleSize, bubblePositions: bubblePositions, screenWidth: screenWidth, screenHeight: screenHeight)
+    func setupPhysics(bubbleSize: CGFloat, bubblePositions: [Int: [CGPoint]],
+                      screenWidth: CGFloat,screenHeight: CGFloat) {
+        physics = Physics(bubbleGrid: bubbleGrid, bubbleSize: bubbleSize,
+                          bubblePositions: bubblePositions,
+                          screenWidth: screenWidth, screenHeight: screenHeight)
     }
     
     //Create a New Projectile
     private func createNewProjectile() {
         projectile = generateRandomBubble()
-        vc.createProjectile(projectile: projectile)
+        viewController.createProjectile(projectile: projectile)
     }
     
     //Set the Bubble Type and Update the Colour on the View
@@ -56,7 +59,41 @@ class Controller {
     ///  - bubbleType: Type to be Changed to
     private func setBubbleTypeAndUpdateColor(at path: IndexPath, toType bubbleType: BubbleType) {
         bubbleGrid.setBubbleType(at: path, toType: bubbleType)
-        vc.updateBubbleColor(at: path)
+        viewController.updateBubbleColor(at: path)
+    }
+    
+    //Get Bubble Type at Index Path
+    /// Parameters:
+    ///  - path: Bubble to whose type to get
+    /// Returns:
+    ///  - BubbleType of the Bubble
+    func getBubbleType(at indexPath: IndexPath) -> BubbleType? {
+        return bubbleGrid.bubbleType(at: indexPath)
+    }
+    
+    //Get Image Name at Index Path
+    /// Parameters:
+    ///  - path: Bubble to whose image name to get
+    /// Returns:
+    ///  - String of the Image Name of the Bubble
+    func getBubbleImageName(at indexPath: IndexPath) -> String? {
+        return bubbleGrid.bubbleImageName(at: indexPath)
+    }
+    
+    //Get Number of Rows
+    /// Returns:
+    ///  - Int of the Number of Rows in the Grid
+    func getNoOfRows() -> Int {
+        return bubbleGrid.rows
+    }
+    
+    //Get Number of Items at a Row
+    /// Parameters:
+    ///  - row: Row whose No of Items to Get
+    /// Returns:
+    ///  - Int of the No of Items at that row
+    func getNoOfItems(at row: Int) -> Int {
+        return bubbleGrid.noOfItems(at: row)
     }
     
     //Calls the Physics Engine to calculate the Path of the Projectile
@@ -77,12 +114,12 @@ class Controller {
     func shootFinished(destination path: IndexPath) {
         setBubbleTypeAndUpdateColor(at: path, toType: projectile.bubbleType)
         
-        vc.projectile.removeFromSuperview()
+        viewController.projectile.removeFromSuperview()
         
         let isRemovingBubbles = removeConnectedBubblesOfSameType(at: path)
         
         if !isRemovingBubbles {
-            vc.enableInteraction(isEnabled: true)
+            viewController.enableInteraction(isEnabled: true)
         }
         
         createNewProjectile()
@@ -92,7 +129,7 @@ class Controller {
     /// Parameters:
     ///  - path: The Bubble that shrunk
     func shrinkFinished(at path: IndexPath) {
-        vc.updateBubbleColor(at: path)
+        viewController.updateBubbleColor(at: path)
     }
     
     //Called when the Drop Animation of the Unconnected Bubble Finishes
@@ -100,7 +137,7 @@ class Controller {
     ///  - path: The Bubble that shrunk
     func dropFinished(at path: IndexPath) {
         setBubbleTypeAndUpdateColor(at: path, toType: .empty)
-        vc.enableInteraction(isEnabled: true)
+        viewController.enableInteraction(isEnabled: true)
     }
     
     //Remove Connected Bubbles that are the same type
@@ -118,10 +155,10 @@ class Controller {
             }
             
             //Call the Shrinking Bubble Animation
-            vc.shrinkBubbles(at: connectedBubbles)
+            viewController.shrinkBubbles(at: connectedBubbles)
             
             let bubblesToDrop = getUnconnectedBubbles()
-            vc.dropUnconnected(at: bubblesToDrop)
+            viewController.dropUnconnected(at: bubblesToDrop)
             
             return !bubblesToDrop.isEmpty
         }
@@ -195,7 +232,8 @@ class Controller {
     ///  - ofType: The Bubble Type that it needs to be
     ///  - path: The Bubble to be checked
     ///  - surroundingBubbles (inout): The list of surrounding Bubbles of the same type
-    private func addIfSameType(ofType: BubbleType, at path: IndexPath, surroundingBubbles: inout [IndexPath]) {
+    private func addIfSameType(ofType: BubbleType, at path: IndexPath,
+                               surroundingBubbles: inout [IndexPath]) {
         if let type = bubbleGrid.bubbleType(at: path) {
             if type == ofType {
                 surroundingBubbles.append(path)
@@ -233,7 +271,7 @@ class Controller {
     //Get a List of Bubbles that are Connected to the Top of the Screen
     /// Returns:
     ///  - Dictionary<Int, [Bool]> of a Matrix of whether Bubbles are connected or not
-    private func getConnectedBubbles() -> Dictionary<Int, [Bool]> {
+    private func getConnectedBubbles() -> [Int: [Bool]] {
         let connectedMatrix = initializeConnectedMatrix()
         var connectedBubbles = connectedMatrix.0
         var queue = connectedMatrix.1
@@ -251,8 +289,8 @@ class Controller {
     /// Returns:
     ///  - Dictionary<Int, [Bool]> of a Matrix of whether Bubbles are connected or not
     ///  - Queue of Nodes that are Connected to Parse through
-    private func initializeConnectedMatrix() -> (Dictionary<Int, [Bool]>, Queue<IndexPath>) {
-        var connectedBubbles = Dictionary<Int, [Bool]>()
+    private func initializeConnectedMatrix() -> ([Int: [Bool]], Queue<IndexPath>) {
+        var connectedBubbles = [Int: [Bool]]()
         var queue = Queue<IndexPath>()
         
         for rowNo in 0..<bubbleGrid.rows {
@@ -279,7 +317,7 @@ class Controller {
     ///  - path: Path whose surrounding Bubbles have to be checked
     ///  - connectedBubbles (inout): Matrix of Connected Bubbles
     private func checkSurroudingBubblesIfEmpty(at path: IndexPath,
-                                               connectedBubbles: inout Dictionary<Int,[Bool]>) {
+                                               connectedBubbles: inout [Int:[Bool]]) {
         let surroundingIndexes = SurroundingIndexes(at: path)
         
         //Check Row Above
@@ -304,7 +342,7 @@ class Controller {
     ///  - path: Check if the Bubble at the Position is Empty
     ///  - connectedBubbles (inout): Matrix of Connected Bubbles
     private func checkBubbleIfEmpty(at path: IndexPath,
-                                    connectedBubbles: inout Dictionary<Int, [Bool]>) {
+                                    connectedBubbles: inout [Int: [Bool]]) {
         guard let connectedRow = connectedBubbles[path.section],
             let type = bubbleGrid.bubbleType(at: path) else {
             return
@@ -324,7 +362,7 @@ class Controller {
     /// Returns:
     ///  - Bubble that was randomly generated
     private func generateRandomBubble() -> Bubble {
-        let randomNumber = Int(arc4random_uniform(UInt32(noOfBubbleTypes)))
+        let randomNumber = Int(arc4random_uniform(UInt32(Constants.noOfBubbleTypes)))
         let bubbleType = BubbleType(rawValue: randomNumber)
         
         return Bubble(bubbleType: bubbleType!)
