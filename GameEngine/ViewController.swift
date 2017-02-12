@@ -23,8 +23,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var gameArea: UIView!
     @IBOutlet weak var bubbleCollectionView: UICollectionView!
     
-    var bubbleSize: CGFloat!
-    var controller: Controller!
+    fileprivate var bubbleSize: CGFloat!
+    fileprivate var controller: Controller!
     var projectile = UIImageView()
     
     //Initial Method to run
@@ -325,7 +325,8 @@ extension ViewController : UICollectionViewDelegateFlowLayout {
         if section % 2 == 0 {
             return UIEdgeInsets.init(top: 0, left: 0, bottom: bottomInset, right: 0)
         } else {
-            return UIEdgeInsets.init(top: 0, left: cellRadius, bottom: bottomInset, right: cellRadius)
+            return UIEdgeInsets.init(top: 0, left: cellRadius, bottom: bottomInset,
+                                     right: cellRadius)
         }
     }
     

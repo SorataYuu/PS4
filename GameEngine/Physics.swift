@@ -20,11 +20,11 @@ import UIKit
  */
 class Physics {
     
-    private (set) var bubbleSize: CGFloat!
-    private (set) var screenWidth: CGFloat!
-    private (set) var screenHeight: CGFloat!
-    private (set) var bubblePositions: [Int: [CGPoint]]!
-    private (set) var bubbleGrid: BubbleGrid
+    private var bubbleSize: CGFloat!
+    private var screenWidth: CGFloat!
+    private var screenHeight: CGFloat!
+    private var bubblePositions: [Int: [CGPoint]]!
+    private var bubbleGrid: BubbleGrid
     
     //Default Initializer
     /// Parameters:

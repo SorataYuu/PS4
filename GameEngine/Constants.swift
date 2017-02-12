@@ -5,7 +5,6 @@
 //  Created by Jeremy Jee on 31/1/17.
 //  Copyright © 2017 nus.cs3217.a0101010. All rights reserved.
 //
-
 import UIKit
 
 //Set of Global Constants for the Game Settings
