@@ -24,7 +24,7 @@ I would extend the logic within the Controller part of the Design. For example, 
 
 I believe that I have designed methods to be sufficiently generic enough that they can be easily reused in a multitude of situations. 
 
-If I am required to do further manipulation of the bubble grid as mentioned above, I may extend a new BubbleGridManipulator class that would encompass all the logic of handling and changing the values of a Bubble Grid in order to tidy up the logic. 
+If I am required to do further manipulation of the bubble grid as mentioned above, I may extend using a new BubbleGridManipulator class that would encompass all the logic of handling and changing the values of a Bubble Grid in order to tidy up the logic. 
 
 I believe that the View and Model are separate enough from the Controller that it is simple enough to easily extend and add more functionality in while leveraging on existing functions that have already been coded.
 
@@ -40,23 +40,47 @@ The user taps on the direction that he wants the bubble to shoot towards, and th
 ######################
 
 Black-Box Testing:
-- Able to Shoot Bubble
-  - Direction chosen by Tap
-  - Sticks onto the Top
-  - Bubble Refills after Shot
-- Collisions
-  - Bounces of Walls
-  - Sticks to Top of Screen
-  - Sticks to a Bubble
-- Snaps to an Empty Slot
-- 3 or More connected Bubbles Shrink and Disappear
-  - Unconnected Bubbles fall down
+- Tap on Screen to Shoot Bubble
+  - Expected Behaviour: 
+     - Bubble Moves
+     - Direction chosen by Tap
+     - Sticks onto the Top
+     - Snaps to an Empty Slot
+     - Bubble Refills after Shot
+- Tap on Screen in a Direction that the Bubble Would Hit a Wall
+  - Expected Behaviour:
+     - Bounces of Walls
+     - Sticks to Top of Screen
+- Tap on Screen in a Direction that the Bubble Would Hit another Bubble
+  - Expected Behaviour:
+    - Bounces of Any Walls
+    - Sticks to a Bubble
+- Shoot 3 of the same coloured bubbles together
+  - Expected Behaviour:
+     - The bubbles shrink and disappear
+- Shoot 2 of the same coloured bubbles together, shoot a different colour
+  below, and then shoot a 3rd of the the same colour to the earlier 2
+  - Expected Behaviour:
+     - The 3 same coloured bubbles shrink and disappear
+     - The Unconnected Bubble falls down
+- Shoot 3 of the same coloured bubbles leaving a gap between 2 and 1 of them
+  shoot a 4th same coloured bubble into the gap
+  - Expected Behaviour:
+     - All 4 bubbles should shrink and disappear
+- Tap and shoot multiple bubbles
+  - Expected Behaviour:
+     - Projectile should be randomly changing colour
 
 Glass-Box Testing:
-- Correct Animations:
-  - Expansion for Projectile
-  - Shrinking for Disappearing Bubbles
-  - Falling for Unconnected Bubbles
-- Projectiles change colors randomly
-- Bubbles travel at Constant Speeds
-- Cannot Shoot again while bubble is travelling or animation ongoing
+- Try to shoot till the bubbles exceed the screen
+  - Expected Behaviour:
+     - The bubbles should stop shooting after a certain point on the screen
+- Try to shoot while a bubble is moving or unconnected bubbles are falling
+  - Expected Behaviour:
+     - Unable to shoot bubbles
+- Try shooting with multiple distances and bounces
+  - Expected Behaviour:
+     - Projectile should be travelling at a constant speed regardless of disance
+- Try shooting and making a large number of unconnected bubbles fall
+  - Expected Behaviour:
+     - Unconnected Bubbles should fall as a large group at a constant speed

@@ -49,7 +49,7 @@ class Physics {
     ///  - CGPath of the Path the Projectile should take
     ///  - CGFloat of the total distance travelled by the Path
     ///  - IndexPath of the final Index where the Projectile ends
-    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
+    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath?) {
         let path = CGMutablePath()
         
         var points = [CGPoint]()
@@ -58,7 +58,7 @@ class Physics {
         var current = origin
         var xyRatio = calculateXYRatio(pointA: current, pointB: tapped)
         
-        var closestBubble = IndexPath()
+        var closestBubble: IndexPath?
         
         //Calculate the next point along the CGPath
         //If it's a Wall continue finding the next point
@@ -73,7 +73,12 @@ class Physics {
                 xyRatio = -xyRatio
             } else {
                 closestBubble = getClosestEmptyBubblePos(point: nextPoint.0)
-                points.append(bubblePositions[closestBubble.section]![closestBubble.item])
+                
+                guard closestBubble != nil else {
+                        return (path, CGFloat(0), nil)
+                }
+                
+                points.append(bubblePositions[closestBubble!.section]![closestBubble!.item])
                 break
             }
         }
@@ -216,7 +221,7 @@ class Physics {
     ///  - point: The Point that needs to be closest to
     /// Returns:
     ///  - IndexPath of the Empty Bubble Slot
-    private func getClosestEmptyBubblePos(point: CGPoint) -> IndexPath {
+    private func getClosestEmptyBubblePos(point: CGPoint) -> IndexPath? {
         var indexPath = IndexPath()
         
         for rowNo in 0..<bubblePositions.keys.count {
@@ -239,8 +244,7 @@ class Physics {
             }
         }
         
-        assert(false)
-        return indexPath
+        return nil
     }
     
     //Get the Closest of the Surrounding Bubbles
@@ -249,9 +253,9 @@ class Physics {
     ///  - point: The Point to be checked against
     /// Returns:
     ///  - IndexPath of the Closest Bubble Slot
-    private func getClosestSurroundingBubble(at indexPath: IndexPath, point: CGPoint) -> IndexPath {
+    private func getClosestSurroundingBubble(at indexPath: IndexPath, point: CGPoint) -> IndexPath? {
         var closestDistance = CGFloat.greatestFiniteMagnitude
-        var closestIndex = IndexPath()
+        var closestIndex: IndexPath?
         let si = SurroundingIndexes(at: indexPath)
         
         shorterDistance(from: point, to: si.topLeftIndex,
@@ -276,14 +280,14 @@ class Physics {
     ///  - indexPath: The Bubble to be checked
     ///  - closestDistance (inout): The current closest distance to the point
     ///  - closestIndex (inout): The current closest Bubble to the point
-    private func shorterDistance(from point: CGPoint, to indexPath: IndexPath, closestDistance: inout CGFloat, closestIndex: inout IndexPath) {
+    private func shorterDistance(from point: CGPoint, to indexPath: IndexPath, closestDistance: inout CGFloat, closestIndex: inout IndexPath?) {
         guard let pos = getPoint(at: indexPath), let type = bubbleGrid.bubbleType(at: indexPath) else {
             return
         }
         
         let distance = distanceBetweenPoints(pointA: point, pointB: pos)
         
-        if distance < closestDistance && type == .empty {
+        if distance < closestDistance && type == .empty && distance < bubbleSize {
             closestDistance = distance
             closestIndex = indexPath
         }

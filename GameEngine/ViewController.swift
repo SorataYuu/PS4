@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         
         setUpGameArea()
         
-        controller = Controller(self)
+        controller = Controller(self, bubbleSize: bubbleSize, viewHeight: gameArea.frame.height)
     }
     
     //Set up the Game Area
@@ -111,9 +111,14 @@ class ViewController: UIViewController {
         let path = controller.calculateProjectilePath(origin: projectile.center,
                                                       tapped: tappedPoint)
         
+        guard let indexPath = path.2 else {
+            enableInteraction(isEnabled: true)
+            return
+        }
+        
         CATransaction.begin()
         CATransaction.setCompletionBlock({
-            self.controller.shootFinished(destination: path.2)
+            self.controller.shootFinished(destination: indexPath)
         })
         
         animateShoot(node: projectile, path: path.0, distance: path.1)

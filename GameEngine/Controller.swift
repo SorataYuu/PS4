@@ -19,7 +19,7 @@ import UIKit
  - physics: Reference to the Physics Engine
  */
 class Controller {
-    private var bubbleGrid = BubbleGrid()
+    private var bubbleGrid: BubbleGrid
     private (set) var projectile = Bubble(bubbleType: .empty)
     
     private var viewController: ViewController
@@ -28,8 +28,12 @@ class Controller {
     //Default Initializer
     /// Parameters:
     ///  - viewController: Reference to the ViewController
-    init(_ viewController: ViewController) {
+    init(_ viewController: ViewController, bubbleSize: CGFloat, viewHeight: CGFloat) {
         self.viewController = viewController
+        
+        let noOfRows = Int(floor(viewHeight / bubbleSize))
+        
+        bubbleGrid = BubbleGrid(noOfRows: noOfRows)
         
         createNewProjectile()
     }
@@ -104,7 +108,7 @@ class Controller {
     ///  - CGPath of the Path the Projectile should take
     ///  - CGFloat of the total distance travelled by the Path
     ///  - IndexPath of the final Index where the Projectile ends
-    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath) {
+    func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath?) {
         return physics.calculateProjectilePath(origin: origin, tapped: tapped)
     }
     

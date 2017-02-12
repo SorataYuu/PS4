@@ -20,10 +20,10 @@ class BubbleGrid: NSObject, NSCoding {
     
     //Default Initialization creates a BubbleGrid of Empty bubbles 
     //with the default rows and columns
-    override init() {
+    init(noOfRows: Int) {
         bubbleGrid = [Int: [Bubble]]()
         
-        for row in 0...Constants.defaultNoOfRows {
+        for row in 0...noOfRows {
             bubbleGrid[row] = [Bubble]()
             
             for _ in 1...Constants.oddRowBubbleCount {
