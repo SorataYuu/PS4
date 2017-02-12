@@ -45,7 +45,7 @@ class Controller {
     ///  - screenWidth: Width of the Screen
     ///  - screenHeight: Height of the Screen
     func setupPhysics(bubbleSize: CGFloat, bubblePositions: [Int: [CGPoint]],
-                      screenWidth: CGFloat,screenHeight: CGFloat) {
+                      screenWidth: CGFloat, screenHeight: CGFloat) {
         physics = Physics(bubbleGrid: bubbleGrid, bubbleSize: bubbleSize,
                           bubblePositions: bubblePositions,
                           screenWidth: screenWidth, screenHeight: screenHeight)
