@@ -80,7 +80,10 @@ Glass-Box Testing:
      - Unable to shoot bubbles
 - Try shooting with multiple distances and bounces
   - Expected Behaviour:
-     - Projectile should be travelling at a constant speed regardless of disance
+     - Projectile should be travelling at a constant speed regardless of distance
 - Try shooting and making a large number of unconnected bubbles fall
   - Expected Behaviour:
      - Unconnected Bubbles should fall as a large group at a constant speed
+- Test Model using Unit Tests
+  - Unit Tests written under GameEngineTests
+    - Testing functions of BubbleGrid and Bubble

@@ -31,7 +31,7 @@ class Controller {
     init(_ viewController: ViewController, bubbleSize: CGFloat, viewHeight: CGFloat) {
         self.viewController = viewController
         
-        let noOfRows = Int(floor(viewHeight / bubbleSize))
+        let noOfRows = Int(ceil(viewHeight / bubbleSize))
         
         bubbleGrid = BubbleGrid(noOfRows: noOfRows)
         

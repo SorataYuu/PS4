@@ -23,7 +23,7 @@ class BubbleGrid: NSObject, NSCoding {
     init(noOfRows: Int) {
         bubbleGrid = [Int: [Bubble]]()
         
-        for row in 0...noOfRows {
+        for row in 0..<noOfRows {
             bubbleGrid[row] = [Bubble]()
             
             for _ in 1...Constants.oddRowBubbleCount {
@@ -91,6 +91,7 @@ class BubbleGrid: NSObject, NSCoding {
         
         return nil
     }
+    
     //Set the bubbleType of a Bubble within a BubbleGrid
     /// Parameter:
     ///  - indexPath: Location of the Bubble

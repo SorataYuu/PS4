@@ -9,12 +9,13 @@
 /* Begin PBXBuildFile section */
 		3F325FBF1E50A9180039B340 /* BubbleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FBE1E50A9180039B340 /* BubbleType.swift */; };
 		3F325FC11E50A94D0039B340 /* CollisionTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FC01E50A94D0039B340 /* CollisionTypes.swift */; };
+		3F325FCA1E50B8770039B340 /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FC91E50B8770039B340 /* GameEngineTests.swift */; };
 		3F748CF71E432DF300B895C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748CF61E432DF300B895C0 /* AppDelegate.swift */; };
 		3F748CF91E432DF300B895C0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748CF81E432DF300B895C0 /* ViewController.swift */; };
 		3F748CFC1E432DF300B895C0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F748CFA1E432DF300B895C0 /* Main.storyboard */; };
 		3F748CFE1E432DF300B895C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F748CFD1E432DF300B895C0 /* Assets.xcassets */; };
 		3F748D011E432DF300B895C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F748CFF1E432DF300B895C0 /* LaunchScreen.storyboard */; };
-		3F748D0C1E432DF300B895C0 /* GameEngineUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748D0B1E432DF300B895C0 /* GameEngineUITests.swift */; };
+		3F748D0C1E432DF300B895C0 /* GameEngineUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F748D0B1E432DF300B895C0 /* GameEngineUITest.swift */; };
 		3F9F109E1E436AC00088A47D /* Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F109B1E436AC00088A47D /* Bubble.swift */; };
 		3F9F109F1E436AC00088A47D /* BubbleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F109C1E436AC00088A47D /* BubbleCell.swift */; };
 		3F9F10A01E436AC00088A47D /* BubbleGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9F109D1E436AC00088A47D /* BubbleGrid.swift */; };
@@ -26,6 +27,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3F325FCC1E50B8770039B340 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F748CEB1E432DF200B895C0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3F748CF21E432DF200B895C0;
+			remoteInfo = GameEngine;
+		};
 		3F748D081E432DF300B895C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F748CEB1E432DF200B895C0 /* Project object */;
@@ -38,6 +46,9 @@
 /* Begin PBXFileReference section */
 		3F325FBE1E50A9180039B340 /* BubbleType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleType.swift; sourceTree = "<group>"; };
 		3F325FC01E50A94D0039B340 /* CollisionTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollisionTypes.swift; sourceTree = "<group>"; };
+		3F325FC71E50B8770039B340 /* GameEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F325FC91E50B8770039B340 /* GameEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineTests.swift; sourceTree = "<group>"; };
+		3F325FCB1E50B8770039B340 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F748CF31E432DF300B895C0 /* GameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F748CF61E432DF300B895C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3F748CF81E432DF300B895C0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -46,7 +57,7 @@
 		3F748D001E432DF300B895C0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F748D021E432DF300B895C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F748D071E432DF300B895C0 /* GameEngineUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameEngineUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3F748D0B1E432DF300B895C0 /* GameEngineUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineUITests.swift; sourceTree = "<group>"; };
+		3F748D0B1E432DF300B895C0 /* GameEngineUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineUITest.swift; sourceTree = "<group>"; };
 		3F748D0D1E432DF300B895C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F9F109B1E436AC00088A47D /* Bubble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bubble.swift; sourceTree = "<group>"; };
 		3F9F109C1E436AC00088A47D /* BubbleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleCell.swift; sourceTree = "<group>"; };
@@ -59,6 +70,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3F325FC41E50B8770039B340 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3F748CF01E432DF200B895C0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -76,11 +94,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F325FC21E50B7150039B340 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		3F325FC81E50B8770039B340 /* GameEngineTests */ = {
+			isa = PBXGroup;
+			children = (
+				3F325FC91E50B8770039B340 /* GameEngineTests.swift */,
+				3F325FCB1E50B8770039B340 /* Info.plist */,
+			);
+			path = GameEngineTests;
+			sourceTree = "<group>";
+		};
 		3F748CEA1E432DF200B895C0 = {
 			isa = PBXGroup;
 			children = (
 				3F748CF51E432DF300B895C0 /* GameEngine */,
 				3F748D0A1E432DF300B895C0 /* GameEngineUITests */,
+				3F325FC81E50B8770039B340 /* GameEngineTests */,
 				3F748CF41E432DF300B895C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +125,7 @@
 			children = (
 				3F748CF31E432DF300B895C0 /* GameEngine.app */,
 				3F748D071E432DF300B895C0 /* GameEngineUITests.xctest */,
+				3F325FC71E50B8770039B340 /* GameEngineTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,7 +147,7 @@
 		3F748D0A1E432DF300B895C0 /* GameEngineUITests */ = {
 			isa = PBXGroup;
 			children = (
-				3F748D0B1E432DF300B895C0 /* GameEngineUITests.swift */,
+				3F748D0B1E432DF300B895C0 /* GameEngineUITest.swift */,
 				3F748D0D1E432DF300B895C0 /* Info.plist */,
 			);
 			path = GameEngineUITests;
@@ -139,6 +175,7 @@
 		3F9F10B21E4C39C00088A47D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3F325FC21E50B7150039B340 /* Tests */,
 				3F9F10A91E485D540088A47D /* Queue.swift */,
 				3F9F109B1E436AC00088A47D /* Bubble.swift */,
 				3F9F109D1E436AC00088A47D /* BubbleGrid.swift */,
@@ -153,6 +190,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3F325FC61E50B8770039B340 /* GameEngineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3F325FCE1E50B8770039B340 /* Build configuration list for PBXNativeTarget "GameEngineTests" */;
+			buildPhases = (
+				3F325FC31E50B8770039B340 /* Sources */,
+				3F325FC41E50B8770039B340 /* Frameworks */,
+				3F325FC51E50B8770039B340 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3F325FCD1E50B8770039B340 /* PBXTargetDependency */,
+			);
+			name = GameEngineTests;
+			productName = GameEngineTests;
+			productReference = 3F325FC71E50B8770039B340 /* GameEngineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3F748CF21E432DF200B895C0 /* GameEngine */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3F748D101E432DF300B895C0 /* Build configuration list for PBXNativeTarget "GameEngine" */;
@@ -199,6 +254,12 @@
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = nus.cs3217.a0139963n;
 				TargetAttributes = {
+					3F325FC61E50B8770039B340 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = M8AKB2VXQH;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 3F748CF21E432DF200B895C0;
+					};
 					3F748CF21E432DF200B895C0 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = M8AKB2VXQH;
@@ -227,11 +288,19 @@
 			targets = (
 				3F748CF21E432DF200B895C0 /* GameEngine */,
 				3F748D061E432DF300B895C0 /* GameEngineUITests */,
+				3F325FC61E50B8770039B340 /* GameEngineTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3F325FC51E50B8770039B340 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3F748CF11E432DF200B895C0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -268,6 +337,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3F325FC31E50B8770039B340 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F325FCA1E50B8770039B340 /* GameEngineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3F748CEF1E432DF200B895C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,13 +368,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F748D0C1E432DF300B895C0 /* GameEngineUITests.swift in Sources */,
+				3F748D0C1E432DF300B895C0 /* GameEngineUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3F325FCD1E50B8770039B340 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3F748CF21E432DF200B895C0 /* GameEngine */;
+			targetProxy = 3F325FCC1E50B8770039B340 /* PBXContainerItemProxy */;
+		};
 		3F748D091E432DF300B895C0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3F748CF21E432DF200B895C0 /* GameEngine */;
@@ -325,6 +407,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3F325FCF1E50B8770039B340 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = M8AKB2VXQH;
+				INFOPLIST_FILE = GameEngineTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nus.cs3217.a0139963n.GameEngineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameEngine.app/GameEngine";
+			};
+			name = Debug;
+		};
+		3F325FD01E50B8770039B340 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = M8AKB2VXQH;
+				INFOPLIST_FILE = GameEngineTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = nus.cs3217.a0139963n.GameEngineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameEngine.app/GameEngine";
+			};
+			name = Release;
+		};
 		3F748D0E1E432DF300B895C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -475,6 +585,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3F325FCE1E50B8770039B340 /* Build configuration list for PBXNativeTarget "GameEngineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F325FCF1E50B8770039B340 /* Debug */,
+				3F325FD01E50B8770039B340 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		3F748CEE1E432DF200B895C0 /* Build configuration list for PBXProject "GameEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
