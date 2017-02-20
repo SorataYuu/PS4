@@ -24,6 +24,7 @@ class Physics {
     private var screenWidth: CGFloat!
     private var screenHeight: CGFloat!
     private var bubblePositions: [Int: [CGPoint]]!
+    private var movingObjects = [MovingObject<Bubble>]()
     private var bubbleGrid: BubbleGrid
     
     //Default Initializer
@@ -39,6 +40,53 @@ class Physics {
         self.bubblePositions = bubblePositions
         self.screenWidth = screenWidth
         self.screenHeight = screenHeight
+    }
+    
+    func addProjectile(from origin: CGPoint, to tapped: CGPoint, projectile: Bubble) {
+        let vector = createMovementVector(pointA: origin, pointB: tapped)
+        let movingObject = MovingObject(object: projectile, vector: vector, position: origin)
+        
+        movingObjects.append(movingObject)
+    }
+    
+    func animate() -> ([MovingObject<Bubble>], [IndexPath]) {
+        var indexesToUpdate = [IndexPath]()
+        var itemsRemoved = 0
+        for (index,object) in movingObjects.enumerated() {
+            
+            guard !Vector.emptyVector(vector: object.vector) else {
+                movingObjects.remove(at: (index - itemsRemoved))
+                itemsRemoved += 1
+                continue
+            }
+            
+            let newX = object.position.x + object.vector.x
+            let newY = object.position.y + object.vector.y
+            let newPosition = CGPoint(x: newX, y: newY)
+            
+            switch checkPointValidity(point: newPosition) {
+            case .none:
+                object.position = newPosition
+                
+            case .wall:
+                object.vector = Vector.reverseX(vector: object.vector)
+                
+            case .top, .bubble:
+                object.vector = Vector(x: 0, y: 0)
+                let closestBubble = getClosestEmptyBubblePos(point: newPosition)
+                
+                guard closestBubble != nil else {
+                    continue
+                }
+                
+                object.position = bubblePositions[closestBubble!.section]![closestBubble!.item]
+                bubbleGrid.setBubbleType(at: closestBubble!, toType: object.object.bubbleType)
+                
+                indexesToUpdate.append(closestBubble!)
+            }
+        }
+        
+        return (movingObjects, indexesToUpdate)
     }
     
     //Calculate the Path of the Projectile
@@ -331,6 +379,14 @@ class Physics {
         let directionOffsetY = abs(pointB.y - pointA.y)
         
         return directionOffsetX / directionOffsetY
+    }
+    
+    private func createMovementVector(pointA: CGPoint, pointB: CGPoint) -> Vector {
+        let directionOffsetX = pointB.x - pointA.x
+        let directionOffsetY = abs(pointB.y - pointA.y)
+        let xyRatio = directionOffsetX / directionOffsetY
+        
+        return Vector(x: xyRatio * Constants.speed, y: -Constants.speed)
     }
 
     //Get the Distance between two points using

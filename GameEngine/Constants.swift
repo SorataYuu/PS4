@@ -20,5 +20,6 @@ class Constants {
     static let defaultNoOfRows = 20
     //Constant based on trials for an appropriate visual animation speed
     static let speedPerPixel = CGFloat(1000)
+    static let speed = CGFloat(20)
     static let noOfBubbleTypes = 4
 }

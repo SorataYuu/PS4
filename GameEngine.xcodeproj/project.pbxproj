@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F0444731E5AAF2B003720D1 /* MovingObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0444721E5AAF2B003720D1 /* MovingObject.swift */; };
+		3F0444751E5AAFC8003720D1 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0444741E5AAFC8003720D1 /* Vector.swift */; };
 		3F325FBF1E50A9180039B340 /* BubbleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FBE1E50A9180039B340 /* BubbleType.swift */; };
 		3F325FC11E50A94D0039B340 /* CollisionTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FC01E50A94D0039B340 /* CollisionTypes.swift */; };
 		3F325FCA1E50B8770039B340 /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F325FC91E50B8770039B340 /* GameEngineTests.swift */; };
@@ -44,6 +46,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F0444721E5AAF2B003720D1 /* MovingObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovingObject.swift; sourceTree = "<group>"; };
+		3F0444741E5AAFC8003720D1 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
 		3F325FBE1E50A9180039B340 /* BubbleType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleType.swift; sourceTree = "<group>"; };
 		3F325FC01E50A94D0039B340 /* CollisionTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollisionTypes.swift; sourceTree = "<group>"; };
 		3F325FC71E50B8770039B340 /* GameEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,13 +98,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3F325FC21E50B7150039B340 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Tests;
-			sourceTree = "<group>";
-		};
 		3F325FC81E50B8770039B340 /* GameEngineTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,7 +172,6 @@
 		3F9F10B21E4C39C00088A47D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				3F325FC21E50B7150039B340 /* Tests */,
 				3F9F10A91E485D540088A47D /* Queue.swift */,
 				3F9F109B1E436AC00088A47D /* Bubble.swift */,
 				3F9F109D1E436AC00088A47D /* BubbleGrid.swift */,
@@ -183,6 +179,8 @@
 				3F325FC01E50A94D0039B340 /* CollisionTypes.swift */,
 				3F325FBE1E50A9180039B340 /* BubbleType.swift */,
 				3F9F10B41E4C7E080088A47D /* SurroundingIndexes.swift */,
+				3F0444721E5AAF2B003720D1 /* MovingObject.swift */,
+				3F0444741E5AAFC8003720D1 /* Vector.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -357,7 +355,9 @@
 				3F9F109E1E436AC00088A47D /* Bubble.swift in Sources */,
 				3F9F10B51E4C7E080088A47D /* SurroundingIndexes.swift in Sources */,
 				3F9F10AA1E485D540088A47D /* Queue.swift in Sources */,
+				3F0444731E5AAF2B003720D1 /* MovingObject.swift in Sources */,
 				3F325FC11E50A94D0039B340 /* CollisionTypes.swift in Sources */,
+				3F0444751E5AAFC8003720D1 /* Vector.swift in Sources */,
 				3F9F10A41E43A1CC0088A47D /* Physics.swift in Sources */,
 				3F9F10A01E436AC00088A47D /* BubbleGrid.swift in Sources */,
 				3F9F10A61E43A97A0088A47D /* Controller.swift in Sources */,
@@ -592,6 +592,7 @@
 				3F325FD01E50B8770039B340 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3F748CEE1E432DF200B895C0 /* Build configuration list for PBXProject "GameEngine" */ = {
 			isa = XCConfigurationList;

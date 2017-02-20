@@ -20,6 +20,7 @@ import UIKit
  */
 class Controller {
     private var bubbleGrid: BubbleGrid
+    private (set) var movingObjects = [MovingObject<Bubble>]()
     private (set) var projectile = Bubble(bubbleType: .empty)
     
     private var viewController: ViewController
@@ -100,6 +101,15 @@ class Controller {
         return bubbleGrid.noOfItems(at: row)
     }
     
+    func shootProjectile(origin: CGPoint, tapped: CGPoint) {
+        physics.addProjectile(from: origin, to: tapped, projectile: projectile)
+        createNewProjectile()
+    }
+    
+    func animate() -> ([MovingObject<Bubble>], [IndexPath]) {
+        return physics.animate()
+    }
+    
     //Calls the Physics Engine to calculate the Path of the Projectile
     /// Parameters:
     ///  - origin: The Original Position of the Projectile
@@ -110,23 +120,6 @@ class Controller {
     ///  - IndexPath of the final Index where the Projectile ends
     func calculateProjectilePath(origin: CGPoint, tapped: CGPoint) -> (CGPath, CGFloat, IndexPath?) {
         return physics.calculateProjectilePath(origin: origin, tapped: tapped)
-    }
-    
-    //Called when the Shooting Animation of the Projectile Finishes
-    /// Parameters:
-    ///  - path: The Bubble Slot that the Projectile ends in
-    func shootFinished(destination path: IndexPath) {
-        setBubbleTypeAndUpdateColor(at: path, toType: projectile.bubbleType)
-        
-        viewController.projectile.removeFromSuperview()
-        
-        let isRemovingBubbles = removeConnectedBubblesOfSameType(at: path)
-        
-        if !isRemovingBubbles {
-            viewController.enableInteraction(isEnabled: true)
-        }
-        
-        createNewProjectile()
     }
     
     //Called when the Shrink Animation of the Destroyed Bubble Finishes
@@ -149,7 +142,7 @@ class Controller {
     ///  - path: The Bubble to be checked
     /// Returns:
     ///  - Bool of whether Unconnected Bubbles were being dropped
-    private func removeConnectedBubblesOfSameType(at path: IndexPath) -> Bool {
+    func removeConnectedBubblesOfSameType(at path: IndexPath) {
         let connectedBubbles = getConnectedBubblesOfSameType(at: path)
         
         //Only Remove when there are 3 or more
@@ -163,11 +156,7 @@ class Controller {
             
             let bubblesToDrop = getUnconnectedBubbles()
             viewController.dropUnconnected(at: bubblesToDrop)
-            
-            return !bubblesToDrop.isEmpty
         }
-        
-        return false
     }
     
     //Get a List of Connected Bubbles that are of the Same Type

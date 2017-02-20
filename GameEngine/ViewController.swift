@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     
     fileprivate var bubbleSize: CGFloat!
     fileprivate var controller: Controller!
-    var projectile = UIImageView()
+    var projectiles = [UIImageView]()
     
     //Initial Method to run
     override func viewDidLoad() {
@@ -34,6 +34,13 @@ class ViewController: UIViewController {
         setUpGameArea()
         
         controller = Controller(self, bubbleSize: bubbleSize, viewHeight: gameArea.frame.height)
+        
+        
+        let displaylink = CADisplayLink(target: self,
+                                        selector: #selector(self.animate))
+        displaylink.preferredFramesPerSecond = 60
+        displaylink.add(to: .current,
+                        forMode: .defaultRunLoopMode)
     }
     
     //Set up the Game Area
@@ -90,7 +97,7 @@ class ViewController: UIViewController {
     ///  - bubble: Bubble to use as Projectile
     func createProjectile(projectile bubble: Bubble) {
         let bubbleImage = UIImage(named: bubble.imageName)
-        projectile = UIImageView(image: bubbleImage)
+        let projectile = UIImageView(image: bubbleImage)
         
         let posX = (gameArea.frame.width/2) - bubbleSize/2
         let posY = gameArea.frame.height - bubbleSize
@@ -101,29 +108,44 @@ class ViewController: UIViewController {
         gameArea.addSubview(projectile)
         
         animateExpansion(node: projectile)
+        projectiles.append(projectile)
     }
     
     //Receive the User's Tap on screen
     func gameAreaTapped(sender: UITapGestureRecognizer) {
-        enableInteraction(isEnabled: false)
-        
         let tappedPoint = sender.location(in: gameArea)
-        let path = controller.calculateProjectilePath(origin: projectile.center,
-                                                      tapped: tappedPoint)
+        if let projectile = projectiles.last {
+            controller.shootProjectile(origin: projectile.center, tapped: tappedPoint)
+        }
+    }
+    
+    func animate() {
+        let animationResult = controller.animate()
+        let movingObjects = animationResult.0
+        let indexesToUpdate = animationResult.1
+        var removedIndexes = [Int]()
         
-        guard let indexPath = path.2 else {
-            enableInteraction(isEnabled: true)
-            return
+        for index in 0..<movingObjects.count {
+            projectiles[index].center = movingObjects[index].position
+            
+            if Vector.emptyVector(vector: movingObjects[index].vector) {
+                removedIndexes.append(index)
+            }
         }
         
-        CATransaction.begin()
-        CATransaction.setCompletionBlock({
-            self.controller.shootFinished(destination: indexPath)
-        })
+        bubbleCollectionView.reloadItems(at: indexesToUpdate)
         
-        animateShoot(node: projectile, path: path.0, distance: path.1)
+        for bubbleIndex in indexesToUpdate {
+            controller.removeConnectedBubblesOfSameType(at: bubbleIndex)
+        }
         
-        CATransaction.commit()
+        for (index, removedIndex) in removedIndexes.enumerated() {
+            let indexToRemove = removedIndex - index
+            projectiles[indexToRemove].removeFromSuperview()
+            projectiles.remove(at: indexToRemove)
+        }
+        
+        
     }
     
     //Animate the Shrinking of Bubbles
